@@ -1,0 +1,40 @@
+{
+  "name": "smart-study-planner-fe",
+  "version": "0.0.0",
+  "description": "Frontend for Smart Study Planner project",
+  "main": "src/main.tsx",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pross1312/Smart-Study-Planner-FE.git"
+  },
+  "keywords": [
+    "AI",
+    "study",
+    "planner",
+    "frontend",
+    "react"
+  ],
+  "author": "21127617-21127720-21127725",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pross1312/Smart-Study-Planner-FE/issues"
+  },
+  "homepage": "https://github.com/pross1312/Smart-Study-Planner-FE#readme",
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.1"
+  }
+}
