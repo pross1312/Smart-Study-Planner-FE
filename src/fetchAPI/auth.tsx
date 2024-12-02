@@ -1,11 +1,10 @@
 import { debugLog } from "../utils/logger";
 import { ResponseFormat } from "../utils/ResponseFormat";
-import Cookies from "js-cookie";
 import {SERVER_ADDR} from "../config/config";
 
 class auth {
   private static HOST: string = SERVER_ADDR;
-  static async register(data: { email: string; password: string }) {
+  static async register(data: { email: string; password: string }): Promise<ResponseFormat | null> {
     try {
       const response = await fetch(`${this.HOST}/auth/register`, {
         method: "POST",
@@ -22,9 +21,10 @@ class auth {
     } catch (error) {
       alert(error);
     }
+    return null;
   }
 
-  static async login(data: { email: string; password: string }) {
+  static async login(data: { email: string; password: string }): Promise<ResponseFormat | null> {
     try {
       const response = await fetch(`${this.HOST}/auth/login`, {
         method: "POST",
@@ -38,26 +38,30 @@ class auth {
       if (!result.success) {
         throw new Error(result.data);
       }
-      Cookies.set("authToken", result.data.token, { expires: 7 });
       return result;
     } catch (error) {
       alert(error);
     }
+    return null;
   }
 
   static async loginGoogle() {
     try {
-      const response = await fetch(`${this.HOST}/auth/google`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const result = new ResponseFormat(await response.json());
-      if (!result.success) {
-        throw new Error(result.data);
-      }
-      return result;
+      window.open(`${this.HOST}/auth/google`, "_self");
+      // const response = await fetch(`${this.HOST}/auth/google`, {
+      //   method: "GET"
+      // });
+      // if (response.redirected) {
+      //   // If the backend redirects, navigate the browser to the Google login page
+      //   window.location.href = response.url;
+      // } else {
+      //   const result = new ResponseFormat(await response.json());
+      //   debugLog(result);
+      //   if (!result.success) {
+      //     throw new Error(result.data);
+      //   }
+      //   return result;
+      // }
     } catch (error) {
       alert(error);
     }

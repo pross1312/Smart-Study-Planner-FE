@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { TextField, Button, Typography, CircularProgress, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../component/AuthContext";
+import { Navigate } from "react-router-dom";
 import auth from '../fetchAPI/auth';
 import GoogleLoginButton from '../component/google';
 
@@ -14,24 +16,31 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>();
   const [loading, setLoading] = useState(false);
+  const authContext = useAuth();
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     setLoading(true);
     const result = await auth.login(data);
     if (result) {
+      authContext.setAccessToken(result.data?.token);
       navigate('/home');
     }
     setLoading(false);
   };
 
   const handleGoogleLogin = async (_response: any) => {
-    const result = await auth.loginGoogle();
-    if (result) {
-      navigate('/home');
-    }
+    auth.loginGoogle()
+    // const result = await auth.loginGoogle();
+    // if (result) {
+    //   navigate('/home');
+    // }
   };
 
   return (
+  <> {
+    authContext.isAuthenticated() ?
+    <Navigate to="/home" replace />
+    :
     <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px' }}>
       <Typography variant="h4" gutterBottom>
         Login
@@ -80,6 +89,8 @@ const Login: React.FC = () => {
         </Typography>
       </div>
     </div>
+    }
+  </>
   );
 };
 
