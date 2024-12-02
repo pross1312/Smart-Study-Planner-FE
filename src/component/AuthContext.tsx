@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useContext } from "react";
 interface IAuthContext {
   getAccessToken: () => string | null;
   isAuthenticated: () => boolean;
@@ -10,7 +10,6 @@ const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [rerenderToggle, setToggle] = useState(false); // HACK: can't figure out GoogleCallback component T_T
-  const storedToken = localStorage.getItem('token');
 
   const setAccessToken = (token: string | null) => {
     localStorage.setItem("token", JSON.stringify(token));

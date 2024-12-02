@@ -1,7 +1,5 @@
-import { debugLog } from "../utils/logger";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import { useEffect, useState } from "react";
 
 function deleteCookie(name: string): void {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
@@ -25,8 +23,9 @@ export default function() {
       <Navigate to="/home" replace />
     );
   } else {
-    const token = getValueFromCookie('google-token')
+    const token = getValueFromCookie('google-token');
     authContext.setAccessTokenWithoutRerender(token);
+    deleteCookie('google-token');
     return <Navigate to="/home" replace />;
   }
 }
