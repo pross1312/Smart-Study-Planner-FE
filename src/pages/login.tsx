@@ -24,7 +24,7 @@ const Login: React.FC = () => {
     setLoading(false);
   };
 
-  const handleGoogleLogin = async (response: any) => {
+  const handleGoogleLogin = async (_response: any) => {
     const result = await auth.loginGoogle();
     if (result) {
       navigate('/home');

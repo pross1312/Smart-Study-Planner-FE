@@ -1,7 +1,10 @@
+import { debugLog } from "../utils/logger";
+import { ResponseFormat } from "../utils/ResponseFormat";
 import Cookies from "js-cookie";
+import {SERVER_ADDR} from "../config/config";
 
 class auth {
-  private static HOST: string = "http://localhost:3000";
+  private static HOST: string = SERVER_ADDR;
   static async register(data: { email: string; password: string }) {
     try {
       const response = await fetch(`${this.HOST}/auth/register`, {
@@ -11,13 +14,13 @@ class auth {
         },
         body: JSON.stringify(data),
       });
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message);
+      const result = new ResponseFormat(await response.json());
+      if (!result.success) {
+        throw new Error(result.data);
       }
       return result;
     } catch (error) {
-      alert(`Error: ${(error as Error).message}`);
+      alert(error);
     }
   }
 
@@ -30,14 +33,15 @@ class auth {
         },
         body: JSON.stringify(data),
       });
-      const result = await response.json();
-      Cookies.set("authToken", result.data.token, { expires: 7 });
-      if (!response.ok) {
-        throw new Error(result.message);
+      const result = new ResponseFormat(await response.json());
+      debugLog("Login result: ", result);
+      if (!result.success) {
+        throw new Error(result.data);
       }
+      Cookies.set("authToken", result.data.token, { expires: 7 });
       return result;
     } catch (error) {
-      alert(`Error: ${(error as Error).message}`);
+      alert(error);
     }
   }
 
@@ -49,13 +53,13 @@ class auth {
           "Content-Type": "application/json",
         },
       });
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message);
+      const result = new ResponseFormat(await response.json());
+      if (!result.success) {
+        throw new Error(result.data);
       }
       return result;
     } catch (error) {
-      alert(`Error: ${(error as Error).message}`);
+      alert(error);
     }
   }
 }

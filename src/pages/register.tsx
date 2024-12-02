@@ -20,7 +20,7 @@ const Register: React.FC = () => {
     setLoading(true);
     const result = await auth.register(data);
     if (result) {
-      navigate('/home');
+      navigate('/login');
     }
     setLoading(false);
   };

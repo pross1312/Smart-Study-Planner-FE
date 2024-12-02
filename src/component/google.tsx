@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 interface GoogleLoginProps {
   loading: boolean;
-  handleGoogleLogin: () => void;
+  handleGoogleLogin: (arg: any) => any;
 }
 
 const GoogleLoginButton: React.FC<GoogleLoginProps> = ({ loading, handleGoogleLogin }) => {
