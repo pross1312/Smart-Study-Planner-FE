@@ -17,9 +17,9 @@ const App: React.FC = () => {
           <Route
             path="/home"
             element={
-              <ProtectedRoute>
+              // <ProtectedRoute>
                 <Home />
-              </ProtectedRoute>
+              // </ProtectedRoute>
             }
           />
           <Route path="/google/callback" element={<GoogleCallback/>} />

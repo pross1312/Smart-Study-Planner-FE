@@ -1,18 +1,15 @@
-import { Button } from '@mui/material';
-import { useAuth } from "../component/AuthContext";
+import Sidebar from "../component/SidebarComponent"
+import Header from "../component/HeaderComponent"
 
 export default function() {
-  const authContext = useAuth();
-  const logout = () => {
-    authContext.setAccessToken(null);
-  };
-
   return (
-    <div>
-      <h1 style={{textAlign: "center"}}>Home Page</h1>
-      <Button onClick={logout} variant="contained" color="primary" fullWidth>
-        Logout
-      </Button>
+    <div style={{ display: 'flex' }}>
+        <div>
+          <Sidebar />
+        </div>
+        <div style={{ flex: 1 }}>
+          <Header />
+        </div>
     </div>
   );
 };
