@@ -1,25 +1,20 @@
-import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faTasks, faCog, faUser } from '@fortawesome/free-solid-svg-icons';
-import logo from '../assets/logo.png';
+import { faTasks, faHome, faCog, faUser } from '@fortawesome/free-solid-svg-icons';
 import './css/SidebarComponent.css'
+import logo from '../assets/logo.png';
 
-const Sidebar: React.FC = () => {
-    const [activeIndex, setActiveIndex] = useState<number>(0);
+interface SidebarProps {
+    onMenuClick: (label: string) => void;
+    activeComponent: string;
+}
 
-    // Sidebar menu items
+const Sidebar: React.FC<SidebarProps> = ({ onMenuClick, activeComponent }) => {
     const menuItems = [
-        { id: 0, icon: <FontAwesomeIcon icon={faTasks} size="lg" />, label: 'Tasks' },
+        { id: 0, icon: <FontAwesomeIcon icon={faTasks} size="lg" />, label: 'TaskList' },
         { id: 2, icon: <FontAwesomeIcon icon={faHome} size="lg" />, label: 'Home' },
         { id: 3, icon: <FontAwesomeIcon icon={faCog} size="lg" />, label: 'Settings' },
         { id: 4, icon: <FontAwesomeIcon icon={faUser} size="lg" />, label: 'Profile' },
     ];
-
-    // Handle click action
-    const handleMenuClick = (index: number) => {
-        setActiveIndex(index);
-        console.log(`Clicked on menu item: ${menuItems[index].label}`);
-    };
 
     return (
         <div className="sidebar">
@@ -27,11 +22,11 @@ const Sidebar: React.FC = () => {
                 <img className="logo" src={logo} alt="Logo" />
             </div>
             <ul className="sidebar-menu">
-                {menuItems.map((item, index) => (
+                {menuItems.map((item) => (
                     <li
                         key={item.id}
-                        className={activeIndex === index ? 'box-icon active' : 'box-icon'}
-                        onClick={() => handleMenuClick(index)}
+                        className={activeComponent === item.label ? 'box-icon active' : 'box-icon'}
+                        onClick={() => onMenuClick(item.label)}
                     >
                         {item.icon}
                     </li>
