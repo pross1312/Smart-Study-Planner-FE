@@ -1,0 +1,23 @@
+.status-options {
+    display: flex;
+    gap: 10px;
+}
+
+.status-box {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.status-box.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.status-box:hover {
+    background-color: #e9ecef;
+}
