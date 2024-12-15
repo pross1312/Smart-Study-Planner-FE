@@ -18,14 +18,14 @@ const TaskList = () => {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [tasksPerPage, setTasksPerPage] = useState(7);
+    const [tasksPerPage, setTasksPerPage] = useState(8);
     const [totalPages, setTotalPages] = useState(1);
     const [statusFilter, setStatusFilter] = useState("");
     const [priorityFilter, setPriorityFilter] = useState("");
     
     useEffect(() => {
         if (statusFilter || priorityFilter) {
-            setTasksPerPage(7);
+            setTasksPerPage(8);
             setCurrentPage(1);
         }
     }, [statusFilter, priorityFilter]);
@@ -46,11 +46,16 @@ const TaskList = () => {
 
 
     useEffect(() => {
+        setLoading(true);
         fetchTasks();
+        setLoading(false);
+
     }, [currentPage, tasksPerPage, statusFilter, priorityFilter]);
 
     const addTaskToList = (newTask: Task) => {
+        setLoading(true);
         fetchTasks();
+        setLoading(false);
     };
 
     const handleUpdateTask = (updatedTask: Task) => {
@@ -61,6 +66,9 @@ const TaskList = () => {
 
     const handleDeleteTask = (taskId: number) => {
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+        setLoading(true);
+        fetchTasks();
+        setLoading(false);
     };
 
     return (

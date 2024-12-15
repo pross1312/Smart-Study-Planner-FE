@@ -3,6 +3,8 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
+import { useAuth } from "../component/AuthContext";
+import {deleteTaskFetch, upadteTaskFetch} from '../fetchAPI/task'
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -22,6 +24,7 @@ interface UpdateTaskModalProps {
 }
 
 const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDelete }) => {
+    const auth = useAuth();
     const [show, setShow] = useState<boolean>(false);
     const [updatedTask, setUpdatedTask] = useState<Task>(task);
 
@@ -39,16 +42,33 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
         setUpdatedTask((prev) => ({ ...prev, status }));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!updatedTask.name || !updatedTask.status) {
             alert("Task Name and Status are required!");
             return;
         }
         onUpdate(updatedTask);
+        const response = await upadteTaskFetch(updatedTask, auth.getAccessToken(), updatedTask.id);
+        if (response?.success == true) {
+            alert("update successful")
+        } else {
+            alert(response?.data)
+        }
         handleClose();
     };
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
+        const userConfirmed = window.confirm("Do you want to delete this task?");
+        if (!userConfirmed) {
+            return; // Exit if the user cancels
+        }
+    
+        const response = await deleteTaskFetch(auth.getAccessToken(), task.id);
+        if (response?.success === true) {
+            alert("Delete successful");
+        } else {
+            alert(response?.data);
+        }
         onDelete(task.id);
         handleClose();
     };
@@ -164,9 +184,9 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                                 value={updatedTask.priority}
                                 onChange={handleChange}
                             >
-                                <option>High</option>
-                                <option>Medium</option>
-                                <option>Low</option>
+                                <option>HIGH</option>
+                                <option>MEDIUM</option>
+                                <option>LOW</option>
                             </Form.Select>
                         </Form.Group>
 
