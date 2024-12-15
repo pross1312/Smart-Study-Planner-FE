@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Sidebar from "../component/SidebarComponent"
 import Header from "../component/HeaderComponent"
 import TaskList from "./task"
+import ChatBox from "../component/ChatBox"
 
 export default function () {
   const [activeComponent, setActiveComponent] = useState<string>('TaskList');
@@ -19,6 +20,7 @@ export default function () {
         <div style={{ flex: 1 }}>
           <Header />
           <TaskList />
+          <ChatBox />
         </div>
     </div>
   );

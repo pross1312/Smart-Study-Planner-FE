@@ -18,14 +18,14 @@ const TaskList = () => {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [tasksPerPage, setTasksPerPage] = useState(8);
+    const [tasksPerPage, setTasksPerPage] = useState(7);
     const [totalPages, setTotalPages] = useState(1);
     const [statusFilter, setStatusFilter] = useState("");
     const [priorityFilter, setPriorityFilter] = useState("");
     
     useEffect(() => {
         if (statusFilter || priorityFilter) {
-            setTasksPerPage(8);
+            setTasksPerPage(7);
             setCurrentPage(1);
         }
     }, [statusFilter, priorityFilter]);
@@ -99,9 +99,16 @@ const TaskList = () => {
                     <ListGroup>
                         {tasks.map(task => (
                             <Card className='mt-3' style={{ display: 'flex'}} key={task.id}>
-                                <Card.Body className={`priority-${task.priority?.toLowerCase()}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '5px' }}>
+                                <Card.Body className={`priority-${task.priority?.toLowerCase()}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '5px', height: '60px'}}>
                                     <div style={{ display: 'flex' }}>
-                                        <div style={{ fontWeight: 700, width: '60px', marginRight: '200px' }}>{task.name}</div>
+                                        <div style={{
+                                            fontWeight: 700,
+                                            width: '100px',
+                                            marginRight: '200px',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis'
+                                        }}>{task.name}</div>
                                         <div style={{ width: '150px', marginRight: '200px' }}>{task.status}</div>
                                         <div>{formatSecondsToHoursMinutes(task.estimate_time)}</div>
                                     </div>
