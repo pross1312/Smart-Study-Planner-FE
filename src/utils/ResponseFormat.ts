@@ -1,4 +1,4 @@
-import { debugLog } from "../utils/logger";
+import { debugLog } from "./logger";
 
 class ResponseFormat {
     success: boolean;
