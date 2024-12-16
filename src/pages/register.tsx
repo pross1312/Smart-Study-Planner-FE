@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { TextField, Button, Typography, CircularProgress, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import auth from '../fetchAPI/auth';
+import auth from '../api/auth';
 
 // Define the types for the form data
 interface IFormInput {

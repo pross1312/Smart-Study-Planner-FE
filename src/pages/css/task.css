@@ -1,0 +1,11 @@
+.priority-low {
+    background-color: #CEEDC7;
+}
+
+.priority-medium {
+    background-color: #FFF6BD;
+}
+
+.priority-high {
+    background-color: #FF9494;
+}

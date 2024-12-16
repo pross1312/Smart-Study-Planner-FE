@@ -59,7 +59,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ calendarRef }) => {
     }, []);
 
     return (
-        <div className="flex justify-between items-center p-3 mb-5">
+        <div className="flex justify-between items-center p-3 mb-3">
             <div className="flex">
                 <div className="border rounded-md border-gray-200">
                     <p className="bg-gray-100 px-5 py-2 text-center font-bold text-lg text-gray-500">

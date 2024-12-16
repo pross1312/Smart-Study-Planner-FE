@@ -1,15 +1,22 @@
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
-import { EventTag, INITIAL_EVENTS, createEventId } from "./event-utils";
-import { createRef, useState } from "react";
+import interactionPlugin, { Draggable } from "@fullcalendar/interaction"; // needed for dayClick
+import { createRef, useEffect, useRef, useState } from "react";
 import AddTaskModal from "./AddTaskModal";
 import CustomHeader from "./CustomHeader";
-import { Box, Modal, TextField } from "@mui/material";
+import EventContent from "./EventContent";
+import {
+    epochMillsToDayStr,
+    minutesToHoursMinutes,
+} from "../../../utils/DateTImeUtils";
+import { createTodo, getTodos } from "../../../api/todo.api";
+import { Task, TaskStatus } from "../../../api/Response";
+import { getTasks } from "../../../api/task.api";
+import moment from "moment";
 
 export function CustomCalendar() {
-    const [isOpenAddTaskModal, setIsOpenAddTaskModal] = useState(true);
+    const [isOpenAddTaskModal, setIsOpenAddTaskModal] = useState(false);
     const [selectedInfo, setSelectedInfo] = useState<any>(null);
     const [modalPosition, setModalPosition] = useState<{
         top: number;
@@ -18,39 +25,170 @@ export function CustomCalendar() {
 
     const calendarRef = createRef<FullCalendar>();
 
+    const [todos, setTodos] = useState([]);
+    const [tasks, setTasks] = useState([] as Task[]);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+
+    const taskContainerRef = useRef(null);
+
+    // Get todos = calendar event
+    useEffect(() => {
+        const fetchTodos = async () => {
+            try {
+                const response = await getTodos({ startDate, endDate });
+                const transformedTodos = response.data.data.map((todo) => ({
+                    id: todo.id.toString(),
+                    name: todo.task.name,
+                    estimatedTime: todo.task.estimate_time,
+                    priority: todo.task.priority,
+                    start: epochMillsToDayStr(todo.start_date),
+                }));
+                console.log(transformedTodos);
+
+                setTodos(transformedTodos);
+            } catch (error) {
+                console.error("Failed to fetch todos:", error);
+            }
+        };
+
+        fetchTodos();
+    }, []);
+
+    // Get tasks that have todo status
+    useEffect(() => {
+        const fetchTodos = async () => {
+            try {
+                const response = await getTasks({ status: TaskStatus.ToDo });
+                setTasks(response.data.data.tasks);
+            } catch (error) {
+                console.error("Failed to fetch todos:", error);
+            }
+        };
+
+        fetchTodos();
+    }, []);
+
+    // build draggable tasks
+    useEffect(() => {
+        new Draggable(taskContainerRef.current, {
+            itemSelector: ".draggable-task",
+            eventData: function (eventEl) {
+                const id = eventEl.getAttribute("data-id");
+                const name = eventEl.getAttribute("data-name");
+                const priority = eventEl.getAttribute("data-priority");
+                const estimatedTime = eventEl.getAttribute(
+                    "data-estimated-time"
+                );
+                return {
+                    id,
+                    name,
+                    priority,
+                    estimatedTime,
+                };
+            },
+        });
+    }, []);
+
     function handleDateClick(selectInfo: any) {
+        const clickedDate = selectInfo.dateStr; // Get the clicked date in string format (e.g., "2024-12-15")
+        const cellElement = document.querySelector(
+            `[data-date="${clickedDate}"]`
+        ); // Find the calendar cell element for the date
+
+        if (cellElement) {
+            const cellRect = cellElement.getBoundingClientRect(); // Get the bounding box of the calendar cell
+            const modalTop = cellRect.top + window.scrollY + 10; // Adjust modal top position relative to the cell
+            const modalLeft = cellRect.left + window.scrollX + cellRect.width; // Adjust modal left position relative to the cell
+
+            setModalPosition({
+                top: modalTop,
+                left: modalLeft,
+            });
+        } else {
+            console.error("Calendar cell not found for the clicked date.");
+        }
+
         setIsOpenAddTaskModal(true);
         setSelectedInfo(selectInfo);
-        setModalPosition({
-            top: selectInfo.jsEvent.pageY,
-            left: selectInfo.jsEvent.pageX,
-        });
     }
 
-    const modalStyles = {
-        position: "absolute",
-        top: modalPosition.top + 10,
-        left: modalPosition.left + 10,
-        zIndex: 9999,
+    const handleDatesSet = (arg) => {
+        setStartDate(arg.startStr);
+        setEndDate(arg.endStr);
+    };
+
+    // Change task to todo when drop into calendar
+    const handleAddTodo = async (info) => {
+        const startDate = moment(info.event.start).format("YYYY-MM-DD");
+
+        console.log(startDate);
+        try {
+            await createTodo({
+                taskId: info.event.id,
+                startDate,
+            });
+            info.draggedEl.parentNode.removeChild(info.draggedEl);
+        } catch (error) {
+            console.error("Failed to create todo:", error);
+        }
     };
 
     return (
-        <div className="flex text-sm min-h-full justify-center items-center">
-            <Sidebar />
-            <div className="flex-grow border border-border-secondary rounded-xl  mx-auto my-auto">
+        <div className="flex text-sm mx-4 gap-5 max-h-[90vh]">
+            <div className="flex-grow  mx-auto">
                 <CustomHeader calendarRef={calendarRef} />
                 <FullCalendar
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
                     headerToolbar={false}
-                    initialEvents={INITIAL_EVENTS}
+                    events={todos}
                     editable={true}
                     selectable={true}
                     dateClick={handleDateClick}
-                    eventContent={renderEventContent}
+                    eventContent={(eventInfo) => (
+                        <EventContent
+                            title={eventInfo.event.extendedProps.name}
+                            timeText={minutesToHoursMinutes(
+                                eventInfo.event.extendedProps.estimatedTime
+                            )}
+                            priority={eventInfo.event.extendedProps.priority}
+                        />
+                    )}
+                    eventReceive={(info) => {
+                        handleAddTodo(info);
+                    }}
+                    droppable={true}
+                    fixedWeekCount={false}
+                    dayMaxEvents={true}
+                    dayMaxEventRows={3}
+                    datesSet={handleDatesSet}
                 />
             </div>
+
+            <div
+                className="border border-l-2 p-2 flex flex-col w-[260px]"
+                ref={taskContainerRef}
+            >
+                {tasks.map((task, index) => (
+                    <div
+                        key={index}
+                        className="draggable-task p-2 rounded cursor-pointer"
+                        data-name={task.name}
+                        data-estimated-time={task.estimate_time}
+                        data-priority={task.priority}
+                        data-id={task.id}
+                    >
+                        <EventContent
+                            title={task.name}
+                            timeText={minutesToHoursMinutes(task.estimate_time)}
+                            priority={task.priority}
+                        />
+                    </div>
+                ))}
+            </div>
+
             {isOpenAddTaskModal && (
                 <AddTaskModal
                     onClose={setIsOpenAddTaskModal}
@@ -58,68 +196,6 @@ export function CustomCalendar() {
                     modalPosition={modalPosition}
                 ></AddTaskModal>
             )}
-        </div>
-    );
-}
-
-function renderEventContent(eventInfo) {
-    const { tag } = eventInfo.event.extendedProps;
-    if (tag === EventTag.NEW) {
-        return (
-            <div
-                className="bg-utility-pink-50 font-semibold 
-                rounded-md border border-utility-pink-200 px-2 py-1 mx-2 flex flex-row justify-between 
-                -my-3
-                "
-            >
-                <span className="text-utility-pink-700 font-semibold">
-                    {eventInfo.event.title}
-                </span>
-                <span className="text-utility-pink-600">
-                    {eventInfo.timeText}
-                </span>
-            </div>
-        );
-    }
-    if (tag === EventTag.BREAK) {
-        return (
-            <div className="bg-[#EDFCF2] rounded-md border mx-2 -my-3 border-[#AAF0C4] px-2 py-1 flex flex-row justify-between">
-                <span className="text-utilGreen700 font-semibold text-ellipsis overflow-hidden whitespace-nowrap">
-                    {eventInfo.event.title}
-                </span>
-                <span className="text-utilGreen600 ">{eventInfo.timeText}</span>
-            </div>
-        );
-    }
-    if (tag === EventTag.MEDIUM) {
-        return (
-            <div className="bg-utility-yellow-50 mx-2 font-semibold -my-3 rounded-md border border-utility-yellow-200 px-2 py-1 flex flex-row justify-between">
-                <span className="text-utility-yellow-700 font-semibold text-ellipsis">
-                    {eventInfo.event.title}
-                </span>
-                <span className="text-utility-yellow-600">
-                    {eventInfo.timeText}
-                </span>
-            </div>
-        );
-    }
-    return (
-        <>
-            <b>{eventInfo.timeText}</b>
-            <i>{eventInfo.event.title}</i>
-        </>
-    );
-}
-
-function Sidebar() {
-    return (
-        <div className="w-64 border-r-2 border-r-gray-200 bg-[#eaf9ff]">
-            <div className="p-[2em]">
-                <h2 className="text-base font-semibold">
-                    TODO: Implement Side Bar
-                </h2>
-                <ul></ul>
-            </div>
         </div>
     );
 }

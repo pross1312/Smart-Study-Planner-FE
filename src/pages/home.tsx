@@ -1,18 +1,17 @@
-import { Button } from '@mui/material';
-import { useAuth } from "../component/AuthContext";
+import { useState } from "react";
+import TaskList from "./task";
 
-export default function() {
-  const authContext = useAuth();
-  const logout = () => {
-    authContext.setAccessToken(null);
-  };
+export default function () {
+    const [activeComponent, setActiveComponent] = useState<string>("TaskList");
 
-  return (
-    <div>
-      <h1 style={{textAlign: "center"}}>Home Page</h1>
-      <Button onClick={logout} variant="contained" color="primary" fullWidth>
-        Logout
-      </Button>
-    </div>
-  );
-};
+    const handleMenuClick = (label: string) => {
+        setActiveComponent(label);
+        console.log(`Clicked on menu item: ${label}`);
+    };
+
+    return (
+        <div style={{ display: "flex" }}>
+            <TaskList />
+        </div>
+    );
+}

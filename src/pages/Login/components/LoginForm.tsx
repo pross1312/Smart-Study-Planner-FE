@@ -11,7 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../component/AuthContext";
 import { Navigate } from "react-router-dom";
-import auth from "../../../fetchAPI/auth";
+import auth from "../../../api/auth";
 import CustomButton from "../../../component/Button/CustomButton";
 import GoogleLoginButton from "../../../component/Google";
 

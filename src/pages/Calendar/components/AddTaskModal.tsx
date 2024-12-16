@@ -4,12 +4,12 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
-    Modal,
     Select,
     TextField,
-    Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getTasks } from "../../../api/task.api";
+import { TaskStatus } from "../../../api/Response";
 
 interface AddTaskModalProps {
     onClose: (open: boolean) => void;
@@ -29,6 +29,22 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
         description: "",
     });
 
+    const [tasks, setTasks] = useState([]);
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const res = await getTasks({ status: TaskStatus.Done });
+                console.log(res.data.data.tasks);
+                setTasks(res.data.data.tasks);
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+            }
+        };
+
+        fetchTasks();
+    }, []);
+
     const handleClose = () => {
         onClose(false);
     };
@@ -46,28 +62,33 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
 
     return (
         <div
-            className="bg-white border-2 p-3 border-border-secondary rounded-md"
+            className="bg-white border-2 p-3 
+            min-w-[300px] border-border-secondary rounded-md flex justify-center items-center"
             style={{
                 position: "absolute",
-                top: modalPosition.top + 10,
-                left: modalPosition.left + 10,
-                zIndex: 9999,
+                top: modalPosition.top,
+                left: modalPosition.left,
+                zIndex: 10,
             }}
         >
-            <Box sx={{ maxWidth: 200 }}>
-                <Typography variant="h6" component="h2" gutterBottom>
-                    Form Modal
-                </Typography>
+            <Box sx={{ maxWidth: 380 }}>
                 <form onSubmit={handleSubmit}>
-                    <TextField
-                        label="Title"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="normal"
-                        required
-                    />
+                    <FormControl fullWidth margin="normal" required>
+                        <InputLabel id="priority-label">Task</InputLabel>
+                        <Select
+                            labelId="priority-label"
+                            name="priority"
+                            value={formData.priority}
+                            onChange={handleChange}
+                        >
+                            {tasks.map((task) => (
+                                <MenuItem key={task.id} value={task.id}>
+                                    {task.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
                     <TextField
                         label="Time"
                         name="time"
@@ -81,28 +102,18 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                         }}
                         required
                     />
-                    <FormControl fullWidth margin="normal" required>
-                        <InputLabel id="priority-label">Priority</InputLabel>
-                        <Select
-                            labelId="priority-label"
-                            name="priority"
-                            value={formData.priority}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value="Low">Low</MenuItem>
-                            <MenuItem value="Medium">Medium</MenuItem>
-                            <MenuItem value="High">High</MenuItem>
-                        </Select>
-                    </FormControl>
+
                     <TextField
-                        label="Description"
-                        name="description"
-                        value={formData.description}
+                        label="Time"
+                        name="time"
+                        type="datetime-local"
+                        value={formData.time}
                         onChange={handleChange}
                         fullWidth
-                        multiline
-                        rows={4}
                         margin="normal"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
                         required
                     />
                     <Box mt={2} display="flex" justifyContent="space-between">
@@ -118,7 +129,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                             color="primary"
                             type="submit"
                         >
-                            Submit
+                            Add
                         </Button>
                     </Box>
                 </form>
