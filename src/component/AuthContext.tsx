@@ -1,15 +1,17 @@
 import React, { createContext, useState, useContext } from "react";
+import { TOKEN } from "../constants/Common";
 interface IAuthContext {
   getAccessToken: () => string | null;
   isAuthenticated: () => boolean;
   setAccessToken: (token: string | null) => void;
   setAccessTokenWithoutRerender: (token: string | null) => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [rerenderToggle, setToggle] = useState(false); // HACK: can't figure out GoogleCallback component T_T
+  const [rerenderToggle, setToggle] = useState(false); // HACK: can't figure out GoogleCallback component T_T  - poor you :(
 
   const setAccessToken = (token: string | null) => {
     localStorage.setItem("token", JSON.stringify(token));
@@ -26,12 +28,16 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return null;
   };
 
+  const logout = () => {
+    localStorage.removeItem(TOKEN);
+  };
+
   const isAuthenticated = () => {
     return getAccessToken() !== null;
   };
 
   return (
-    <AuthContext.Provider value={{getAccessToken, isAuthenticated, setAccessToken, setAccessTokenWithoutRerender}}>
+    <AuthContext.Provider value={{getAccessToken, isAuthenticated, setAccessToken, setAccessTokenWithoutRerender, logout}}>
       {children}
     </AuthContext.Provider>
   )

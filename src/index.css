@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        min-height: 100vh;
+        box-sizing: border-box;
+        font-size: 16px;
+        overflow: auto;
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    }
+}
+
+@layer components {
+    .gradient-outline-btn {
+        position: relative;
+
+        height: 2.857em;
+        min-width: 8.5em;
+        background: white;
+        background-clip: padding-box;
+        border: 0.063em solid transparent;
+
+        cursor: pointer;
+        border-radius: 360px;
+        transition: all 0.3s ease;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 1.75em;
+        gap: 0.5em;
+    }
+    .no-scrollbar {
+        /* Hide scrollbar for Chrome, Safari, and Opera */
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge, and Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .gradient-outline-btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        margin: -0.063em;
+        border-radius: inherit;
+        background: linear-gradient(
+            to right,
+            rgba(165, 166, 83, 1),
+            rgba(124, 83, 166, 1),
+            rgba(46, 41, 51, 1)
+        );
+    }
+    .gradient-outline-btn:hover::before {
+        opacity: 0.8;
+    }
+
+    .indicators {
+        padding: 2.5rem 1rem;
+        justify-content: start;
+        bottom: 3.75rem;
+    }
+
+    @media (min-width: 640px) {
+        .indicators {
+            padding: 0 2.5rem;
+            justify-content: start;
+            bottom: 2.5rem;
+        }
+    }
+
+    .indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 100%;
+        background-color: white;
+        transition: width 250ms ease;
+    }
+
+    .control {
+        background-color: white;
+        &[data-inactive] {
+            opacity: 0;
+            cursor: default;
+        }
+    }
+
+    .tab-custom::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-custom {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .page-layout {
+        @apply mx-auto max-w-[1080px];
+    }
+
+    .ticket-payment-title-desktop {
+        @apply lg:flex lg:h-[46px] lg:items-center;
+    }
+
+    .ticket-payment-content-desktop {
+        @apply lg:flex lg:h-20 lg:items-center;
+    }
+
+    .my-page-form-item {
+        @apply flex-col justify-between gap-1.5 lg:flex-row lg:gap-0;
+    }
+
+    .my-page-form-label {
+        @apply text-sm font-medium text-secondary-500;
+    }
+
+    .my-page-form-info-width {
+        @apply lg:w-[480px];
+    }
+
+    .my-page-form-info {
+        @apply text-md font-bold text-secondary-800;
+    }
+}
+
+.fc {
+    /* the calendar root */
+}
+/* disable event css */
+.fc-event {
+    all: unset; /* Removes all FullCalendar's default styles */
+}
+
+.fc-event-title {
+    all: unset; /* Removes title-specific styling */
+}
+
+.fc .fc-daygrid-event {
+    margin-top: 0px;
+}
+
+.fc .fc-daygrid-day-top {
+    display: flex;
+    flex-direction: row;
+}
+
+.fc .fc-daygrid-day-number {
+    font-weight: 600;
+    color: #414651;
+    padding: 12px;
+    display: block;
+}
+
+.fc-day-today .fc-daygrid-day-number {
+    color: #fff;
+    background-color: #7F56D9;
+    border-radius: 50%;
+    padding: 4px 8px;
+    margin: 12px;
+}

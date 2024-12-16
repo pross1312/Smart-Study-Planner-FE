@@ -1,7 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTasks, faHome, faCog, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faTasks, faHome, faCog, faUser, faCalendar } from '@fortawesome/free-solid-svg-icons';
 import './css/SidebarComponent.css'
 import logo from '../assets/logo.png';
+import { PATH } from '../router/path';
+import { Link } from 'react-router-dom';
 
 interface SidebarProps {
     onMenuClick: (label: string) => void;
@@ -10,10 +12,11 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ onMenuClick, activeComponent }) => {
     const menuItems = [
-        { id: 0, icon: <FontAwesomeIcon icon={faTasks} size="lg" />, label: 'TaskList' },
-        { id: 2, icon: <FontAwesomeIcon icon={faHome} size="lg" />, label: 'Home' },
+        { id: 0, icon: <FontAwesomeIcon icon={faTasks} size="lg" />, label: 'TaskList', link: PATH.TASKS },
+        { id: 2, icon: <FontAwesomeIcon icon={faHome} size="lg" />, label: 'Home', link: PATH.HOME },
         { id: 3, icon: <FontAwesomeIcon icon={faCog} size="lg" />, label: 'Settings' },
         { id: 4, icon: <FontAwesomeIcon icon={faUser} size="lg" />, label: 'Profile' },
+        { id: 5, icon: <FontAwesomeIcon icon={faCalendar} size="lg" />, label: 'Calendar', link: PATH.CALENDAR },
     ];
 
     return (
@@ -23,13 +26,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onMenuClick, activeComponent }) => {
             </div>
             <ul className="sidebar-menu">
                 {menuItems.map((item) => (
-                    <li
+                    <Link
+                        to={item.link ? item.link : '#'}
                         key={item.id}
                         className={activeComponent === item.label ? 'box-icon active' : 'box-icon'}
                         onClick={() => onMenuClick(item.label)}
                     >
                         {item.icon}
-                    </li>
+                    </Link>
                 ))}
             </ul>
         </div>

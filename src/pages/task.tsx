@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, ListGroup, Button, Form } from 'react-bootstrap';
 import './css/task.css';
-import { listTaskFetch } from '../fetchAPI/task'
+import { listTaskFetch } from '../api/task'
 import { useAuth } from "../component/AuthContext";
 import CreateTaskModal from "../component/CreateTask"
 import UpdateTaskModal from "../component/UpdateTask"
@@ -72,7 +72,7 @@ const TaskList = () => {
     };
 
     return (
-        <div className="container m-0 d-flex" style={{backgroundColor: '#F3F4F8', padding: '24px', height: '92%', flexDirection: 'column', justifyContent: 'space-between'}}>
+        <div className="container m-0 d-flex" style={{backgroundColor: '#F3F4F8', padding: '24px 41px', height: '92%', flexDirection: 'column', justifyContent: 'space-between'}}>
             <div>
                 <div className='d-flex justify-content-between align-items-center'>
                     <h2>🔥 Task List</h2>
