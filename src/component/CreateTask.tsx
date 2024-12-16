@@ -3,7 +3,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
-import {addTaskFetch} from '../fetchAPI/task'
+import {addTaskFetch} from '../api/task'
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../component/AuthContext";

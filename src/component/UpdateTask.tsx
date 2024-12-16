@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import { useAuth } from "../component/AuthContext";
-import {deleteTaskFetch, upadteTaskFetch} from '../fetchAPI/task'
+import {deleteTaskFetch, upadteTaskFetch} from "../api/task";
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 
