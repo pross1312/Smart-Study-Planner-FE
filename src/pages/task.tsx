@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Card, ListGroup, Button, Form } from 'react-bootstrap';
 import './css/task.css';
-import task from '../api/task'
+import { listTaskFetch } from '../api/task'
 import { useAuth } from "../component/AuthContext";
+import CreateTaskModal from "../component/CreateTask"
+import UpdateTaskModal from "../component/UpdateTask"
 
 function formatSecondsToHoursMinutes(seconds: number) {
     const hours = Math.floor(seconds / 3600); // Get the hours
@@ -20,31 +22,59 @@ const TaskList = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [statusFilter, setStatusFilter] = useState("");
     const [priorityFilter, setPriorityFilter] = useState("");
+    
+    useEffect(() => {
+        if (statusFilter || priorityFilter) {
+            setTasksPerPage(8);
+            setCurrentPage(1);
+        }
+    }, [statusFilter, priorityFilter]);
+
+    const fetchTasks = async () => {
+        try {
+            setLoading(true);
+            const response = await listTaskFetch(currentPage, tasksPerPage, statusFilter, priorityFilter, auth.getAccessToken());
+            const listTask = response.data.tasks;
+            setTasks(listTask);
+            setTotalPages(Math.ceil(response.data.total.count/ tasksPerPage))
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
+            setLoading(false);
+        }
+    };
+
 
     useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                setLoading(true);
-                const response = await task(currentPage, tasksPerPage, statusFilter, priorityFilter, auth.getAccessToken());
-                const listTask = response.data.tasks;
-                setTasks(listTask);
-                setTotalPages(Math.ceil(response.data.total.count/ tasksPerPage))
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching tasks:', error);
-                setLoading(false);
-            }
-        };
-
+        setLoading(true);
         fetchTasks();
+        setLoading(false);
+
     }, [currentPage, tasksPerPage, statusFilter, priorityFilter]);
 
-    
+    const addTaskToList = (newTask: Task) => {
+        setLoading(true);
+        fetchTasks();
+        setLoading(false);
+    };
+
+    const handleUpdateTask = (updatedTask: Task) => {
+        setTasks((prevTasks) =>
+            prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+        );
+    };
+
+    const handleDeleteTask = (taskId: number) => {
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+        setLoading(true);
+        fetchTasks();
+        setLoading(false);
+    };
 
     return (
         <div className="container m-0 d-flex" style={{backgroundColor: '#F3F4F8', padding: '24px 41px', height: '92%', flexDirection: 'column', justifyContent: 'space-between'}}>
             <div>
-                <div className='d-flex justify-content-between'>
+                <div className='d-flex justify-content-between align-items-center'>
                     <h2>🔥 Task List</h2>
                     <div className="filters d-flex">
                         <Form.Group className="d-flex align-items-center justify-content-center" controlId="statusFilter">
@@ -66,6 +96,7 @@ const TaskList = () => {
                                 <option value="HIGH">High</option>
                             </Form.Control>
                         </Form.Group>
+                        <CreateTaskModal addTaskToList={addTaskToList} />
                     </div>
                 </div>
                 
@@ -76,10 +107,25 @@ const TaskList = () => {
                     <ListGroup>
                         {tasks.map(task => (
                             <Card className='mt-3' style={{ display: 'flex'}} key={task.id}>
-                                <Card.Body className={`priority-${task.priority?.toLowerCase()}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '5px' }}>
-                                    <div style={{fontWeight: 700}}>{task.name}</div>
-                                    <div>{task.status}</div>
-                                    <div>{formatSecondsToHoursMinutes(task.estimate_time)}</div>
+                                <Card.Body className={`priority-${task.priority?.toLowerCase()}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '5px', height: '60px'}}>
+                                    <div style={{ display: 'flex' }}>
+                                        <div style={{
+                                            fontWeight: 700,
+                                            width: '100px',
+                                            marginRight: '200px',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis'
+                                        }}>{task.name}</div>
+                                        <div style={{ width: '150px', marginRight: '200px' }}>{task.status}</div>
+                                        <div>{formatSecondsToHoursMinutes(task.estimate_time)}</div>
+                                    </div>
+                                    <UpdateTaskModal
+                                        key={task.id}
+                                        task={task}
+                                        onUpdate={handleUpdateTask}
+                                        onDelete={handleDeleteTask}
+                                    />
                                 </Card.Body>
                             </Card>
                         ))}
