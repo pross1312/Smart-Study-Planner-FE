@@ -13,8 +13,7 @@ import { useAuth } from "../../../component/AuthContext";
 import { Navigate } from "react-router-dom";
 import auth from "../../../api/auth";
 import CustomButton from "../../../component/Button/CustomButton";
-import GoogleLoginButton from "../../../component/Google";
-
+import GoogleLoginButton from "../../../component/google";
 interface IFormInput {
     email: string;
     password: string;

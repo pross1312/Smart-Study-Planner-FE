@@ -9,17 +9,15 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getTasks } from "../../../api/task.api";
-import { TaskStatus } from "../../../api/Response";
+import { Task, TaskStatus } from "../../../api/Response";
 
 interface AddTaskModalProps {
     onClose: (open: boolean) => void;
-    selectedInfo: any;
     modalPosition: { top: number; left: number }; // Pass modal position as prop
 }
 
 const AddTaskModal: React.FC<AddTaskModalProps> = ({
     onClose,
-    selectedInfo,
     modalPosition,
 }) => {
     const [formData, setFormData] = useState({
@@ -29,7 +27,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
         description: "",
     });
 
-    const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useState([] as Task[]);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -49,12 +47,12 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
         onClose(false);
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e : any) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e : any) => {
         e.preventDefault();
         console.log("Form Data Submitted:", formData);
         handleClose(); // Close modal after submission

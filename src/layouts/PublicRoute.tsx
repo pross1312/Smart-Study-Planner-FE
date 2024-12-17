@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Navigate } from "react-router-dom";
-import LoginPage from "../pages/login";
+import LoginPage from "../pages/Login/LoginPage";
 
 const TOKEN = "token";
 

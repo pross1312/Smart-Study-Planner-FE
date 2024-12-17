@@ -16,9 +16,6 @@ interface Task {
     estimate_time: string;
 }
 
-interface CreateTaskModalProps {
-    addTaskToList: (newTask: Task) => void;
-}
 
 function convertTime(timestamp: string): string {
     const date = new Date(timestamp);
@@ -30,7 +27,11 @@ function convertTime(timestamp: string): string {
     return totalSeconds.toString();
 }
 
-const CreateTaskModal: React.FC = ({ addTaskToList }) => {
+interface CreateTaskModalProps {
+    addTaskToList: (newTask: Task) => void;
+}
+
+const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
     const auth = useAuth();
     const [show, setShow] = useState<boolean>(false);
     const [task, setTask] = useState<Task>({
@@ -61,7 +62,7 @@ const CreateTaskModal: React.FC = ({ addTaskToList }) => {
             return;
         }
         task.estimate_time = convertTime(task.estimate_time);
-        const response = await addTaskFetch(task, auth.getAccessToken());
+        const response = await addTaskFetch(task, auth.getAccessToken() || '');
         alert(response?.data)
         addTaskToList(task);
         handleClose();

@@ -1,6 +1,6 @@
-import LoginImg from "@/assets/images/loginImage.png";
+import LoginImg from "@/assets/images/LoginImage.png";
 
-const AuthImage = () => {
+function AuthImage() {
     return (
         <div className="hidden aspect-square p-6 lg:flex">
             <img
@@ -10,6 +10,7 @@ const AuthImage = () => {
             />
         </div>
     );
-};
+
+}
 
 export default AuthImage;

@@ -7,15 +7,7 @@ import { useAuth } from "../component/AuthContext";
 import {deleteTaskFetch, upadteTaskFetch} from "../api/task";
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
-
-interface Task {
-    id: number;
-    name: string;
-    description: string;
-    status: string;
-    priority: string;
-    estimateTime: string;
-}
+import { Task, TaskStatus } from "../api/Response";
 
 interface UpdateTaskModalProps {
     task: Task;
@@ -38,7 +30,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
         setUpdatedTask((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleStatusChange = (status: string) => {
+    const handleStatusChange = (status: TaskStatus) => {
         setUpdatedTask((prev) => ({ ...prev, status }));
     };
 
@@ -48,7 +40,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
             return;
         }
         onUpdate(updatedTask);
-        const response = await upadteTaskFetch(updatedTask, auth.getAccessToken(), updatedTask.id);
+        const response = await upadteTaskFetch(updatedTask, auth.getAccessToken() || "[]", updatedTask.id);
         if (response?.success == true) {
             alert("update successful")
         } else {
@@ -63,7 +55,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
             return; // Exit if the user cancels
         }
     
-        const response = await deleteTaskFetch(auth.getAccessToken(), task.id);
+        const response = await deleteTaskFetch(auth.getAccessToken() || "[]", task.id);
         if (response?.success === true) {
             alert("Delete successful");
         } else {
@@ -151,7 +143,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                         <Form.Group className="mb-3" controlId="taskStatus">
                             <Form.Label>Status</Form.Label>
                             <div className="status-options">
-                                {["IN_PROGRESS", "TODO", "DONE"].map((status) => (
+                                {[TaskStatus.InProgress, TaskStatus.ToDo, TaskStatus.Done].map((status) => (
                                     <div
                                         key={status}
                                         className={`status-box ${
@@ -197,8 +189,8 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                             <Form.Label>Estimate Time</Form.Label>
                             <DatePicker
                                 selected={
-                                    updatedTask.estimateTime
-                                        ? new Date(updatedTask.estimateTime)
+                                    updatedTask.estimate_time
+                                        ? new Date(updatedTask.estimate_time)
                                         : null
                                 }
                                 onChange={(time) =>

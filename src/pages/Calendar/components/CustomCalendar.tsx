@@ -11,13 +11,12 @@ import {
     minutesToHoursMinutes,
 } from "../../../utils/DateTImeUtils";
 import { createTodo, getTodos } from "../../../api/todo.api";
-import { Task, TaskStatus } from "../../../api/Response";
+import { Task, TaskStatus, Todo } from "../../../api/Response";
 import { getTasks } from "../../../api/task.api";
 import moment from "moment";
 
 export function CustomCalendar() {
     const [isOpenAddTaskModal, setIsOpenAddTaskModal] = useState(false);
-    const [selectedInfo, setSelectedInfo] = useState<any>(null);
     const [modalPosition, setModalPosition] = useState<{
         top: number;
         left: number;
@@ -37,7 +36,7 @@ export function CustomCalendar() {
         const fetchTodos = async () => {
             try {
                 const response = await getTodos({ startDate, endDate });
-                const transformedTodos = response.data.data.map((todo) => ({
+                const transformedTodos = response.data.data.map((todo : Todo) => ({
                     id: todo.id.toString(),
                     name: todo.task.name,
                     estimatedTime: todo.task.estimate_time,
@@ -71,6 +70,7 @@ export function CustomCalendar() {
 
     // build draggable tasks
     useEffect(() => {
+        if(!taskContainerRef.current) return;
         new Draggable(taskContainerRef.current, {
             itemSelector: ".draggable-task",
             eventData: function (eventEl) {
@@ -110,16 +110,16 @@ export function CustomCalendar() {
         }
 
         setIsOpenAddTaskModal(true);
-        setSelectedInfo(selectInfo);
+        // setSelectedInfo(selectInfo);
     }
 
-    const handleDatesSet = (arg) => {
+    const handleDatesSet = (arg : any) => {
         setStartDate(arg.startStr);
         setEndDate(arg.endStr);
     };
 
     // Change task to todo when drop into calendar
-    const handleAddTodo = async (info) => {
+    const handleAddTodo = async (info : any) => {
         const startDate = moment(info.event.start).format("YYYY-MM-DD");
 
         console.log(startDate);
@@ -192,7 +192,6 @@ export function CustomCalendar() {
             {isOpenAddTaskModal && (
                 <AddTaskModal
                     onClose={setIsOpenAddTaskModal}
-                    selectedInfo={selectedInfo}
                     modalPosition={modalPosition}
                 ></AddTaskModal>
             )}

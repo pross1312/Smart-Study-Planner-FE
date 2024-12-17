@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, ListGroup, Button, Form } from 'react-bootstrap';
 import './css/task.css';
 import { listTaskFetch } from '../api/task'
 import { useAuth } from "../component/AuthContext";
 import CreateTaskModal from "../component/CreateTask"
 import UpdateTaskModal from "../component/UpdateTask"
+import { Task } from '../api/Response';
 
 function formatSecondsToHoursMinutes(seconds: number) {
     const hours = Math.floor(seconds / 3600); // Get the hours
@@ -15,7 +16,7 @@ function formatSecondsToHoursMinutes(seconds: number) {
 
 const TaskList = () => {
     const auth = useAuth();
-    const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useState([] as Task[]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [tasksPerPage, setTasksPerPage] = useState(8);
@@ -33,10 +34,10 @@ const TaskList = () => {
     const fetchTasks = async () => {
         try {
             setLoading(true);
-            const response = await listTaskFetch(currentPage, tasksPerPage, statusFilter, priorityFilter, auth.getAccessToken());
-            const listTask = response.data.tasks;
+            const response = await listTaskFetch(currentPage, tasksPerPage, statusFilter, priorityFilter, auth.getAccessToken() || '');
+            const listTask = response?.data.tasks;
             setTasks(listTask);
-            setTotalPages(Math.ceil(response.data.total.count/ tasksPerPage))
+            setTotalPages(Math.ceil(response?.data.total.count/ tasksPerPage))
             setLoading(false);
         } catch (error) {
             console.error('Error fetching tasks:', error);
@@ -52,7 +53,7 @@ const TaskList = () => {
 
     }, [currentPage, tasksPerPage, statusFilter, priorityFilter]);
 
-    const addTaskToList = (newTask: Task) => {
+    const addTaskToList = () => {
         setLoading(true);
         fetchTasks();
         setLoading(false);
@@ -105,7 +106,7 @@ const TaskList = () => {
                     <p>Loading tasks...</p>
                 ) : (
                     <ListGroup>
-                        {tasks.map(task => (
+                        {tasks?.map(task => (
                             <Card className='mt-3' style={{ display: 'flex'}} key={task.id}>
                                 <Card.Body className={`priority-${task.priority?.toLowerCase()}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '5px', height: '60px'}}>
                                     <div style={{ display: 'flex' }}>

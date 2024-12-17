@@ -1,6 +1,5 @@
 import React from 'react';
-import { Nav, Navbar, Container, NavDropdown } from 'react-bootstrap';
-import logo from '../assets/logo.png'; // Replace with your logo path
+import { Nav, Navbar } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faUserCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 

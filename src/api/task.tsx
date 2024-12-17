@@ -52,7 +52,7 @@ export const addTaskFetch = async (taskData: { name: string, description: string
   return null;
 };
 
-export const upadteTaskFetch = async (taskData: { name: string, description: string; status: string; priority: string, estimate_time: string}, token: string, id: string): Promise<ResponseFormat | null> => {
+export const upadteTaskFetch = async (taskData: { name: string, description: string; status: string; priority: string, estimate_time: number}, token: string, id: number): Promise<ResponseFormat | null> => {
   try {
     const response = await fetch(`${SERVER_ADDR}/task/${id}`, {
       method: "PUT",
@@ -79,7 +79,7 @@ export const upadteTaskFetch = async (taskData: { name: string, description: str
 };
 
 
-export const deleteTaskFetch = async (token: string, id: string): Promise<ResponseFormat | null> => {
+export const deleteTaskFetch = async (token: string, id: number): Promise<ResponseFormat | null> => {
   try {
     const response = await fetch(`${SERVER_ADDR}/task/${id}`, {
       method: "DELETE",

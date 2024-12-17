@@ -1,7 +1,6 @@
 import { useMemo } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
-import { TOKEN } from "../constants/Common";
 import { PATH } from "../router/path";
 import { useAuth } from "../component/AuthContext";
 import MainLayout from "./MainLayout";

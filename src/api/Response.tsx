@@ -1,6 +1,6 @@
 // Define the Task interface
 interface Task {
-    id: string;
+    id: number;
     user_id: string;
     name: string;
     description: string;
@@ -14,11 +14,11 @@ interface Task {
 
 // Define the Todo interface
 interface Todo {
-    id: string;
-    user_id: string;
+    id: number;
+    user_id: number;
     task_id: string;
-    start_date: string; // Timestamp as a string
-    end_date: string; // Timestamp as a string
+    start_date: number; 
+    end_date: number;
     task: Task;
 }
 

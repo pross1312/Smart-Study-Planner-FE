@@ -3,8 +3,8 @@ import PublicRoute from "../layouts/PublicRoute";
 import { PATH } from "./path";
 import PrivateRoute from "../layouts/PrivateRoute";
 import { CalendarPage } from "../pages/Calendar";
-import TaskList from "../pages/task";
-import Register from "../pages/register";
+import TaskList from "../pages/Task";
+import Register from "../pages/Register";
 import GoogleCallback from "../component/GoogleCallback";
 import home from "../pages/Home";
 

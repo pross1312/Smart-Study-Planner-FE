@@ -1,6 +1,12 @@
 import { TaskPriority } from "../../../api/Response";
 
-const EventContent = ({ priority, title, timeText }) => {
+export interface EventContentProps {
+    priority: TaskPriority;
+    title: string;
+    timeText: string;
+}
+
+const EventContent = ({ priority, title, timeText } : EventContentProps) => {
     const renderContent = () => {
         switch (priority) {
             case TaskPriority.High:
