@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { SERVER_ADDR } from "../config/config";
 import { TOKEN } from "../constants/Common";
 
@@ -10,13 +10,16 @@ export const api = axios.create({
     withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
+
+const onRequest = async (config: AxiosRequestConfig): Promise<any> => {
     const token = localStorage.getItem(TOKEN);
-    if (token) {
-        config.headers.Authorization = `Bearer ${JSON.parse(token)}`;
-    }
-    return config;
-});
+    if (!token) return config;
+    return {
+        ...config,
+        headers: { ...config.headers, Authorization: `Bearer ${JSON.parse(localStorage.getItem(TOKEN) || "[]")}` },
+    };
+};
+
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
     if (error.response?.status === 401) {
@@ -24,6 +27,8 @@ const onResponseError = (error: AxiosError): Promise<AxiosError> => {
     }
     return Promise.reject(error);
 };
+
+api.interceptors.request.use(onRequest);
 
 api.interceptors.response.use(
     (response: AxiosResponse) => response,
