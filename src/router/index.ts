@@ -5,8 +5,8 @@ import PrivateRoute from "../layouts/PrivateRoute";
 import { CalendarPage } from "../pages/Calendar";
 import TaskList from "../pages/Task";
 import Register from "../pages/Register";
+import IFeaturePage from "../pages/FeaturePage";
 import GoogleCallback from "../component/GoogleCallback";
-import home from "../pages/Home";
 
 const router = createBrowserRouter([
     {
@@ -26,16 +26,16 @@ const router = createBrowserRouter([
         Component: PrivateRoute,
         children: [
             {
-                path: PATH.HOME,
-                Component: home,
-            },
-            {
                 path: PATH.CALENDAR,
                 Component: CalendarPage,
             },
             {
                 path: PATH.TASKS,
                 Component: TaskList,
+            },
+            {
+                path: PATH.IFEATUREPAGE,
+                Component: IFeaturePage,
             },
         ],
     },
