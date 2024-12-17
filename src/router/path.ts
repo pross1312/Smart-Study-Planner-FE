@@ -1,3 +1,4 @@
+
 export const PATH = {
     LOGIN: "/login",
     REGISTER: "/register",
@@ -7,4 +8,5 @@ export const PATH = {
     PROFILE: "/profile",
     SETTINGS: "/settings",
     GOOGLE_CALL_BACK: "/google/callback",
+    IFEATUREPAGE: "*"
 };

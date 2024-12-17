@@ -12,11 +12,11 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ onMenuClick, activeComponent }) => {
     const menuItems = [
-        { id: 0, icon: <FontAwesomeIcon icon={faTasks} size="lg" />, label: 'TaskList', link: PATH.TASKS },
         { id: 2, icon: <FontAwesomeIcon icon={faHome} size="lg" />, label: 'Home', link: PATH.HOME },
-        { id: 3, icon: <FontAwesomeIcon icon={faCog} size="lg" />, label: 'Settings' },
-        { id: 4, icon: <FontAwesomeIcon icon={faUser} size="lg" />, label: 'Profile' },
+        { id: 0, icon: <FontAwesomeIcon icon={faTasks} size="lg" />, label: 'TaskList', link: PATH.TASKS },
         { id: 5, icon: <FontAwesomeIcon icon={faCalendar} size="lg" />, label: 'Calendar', link: PATH.CALENDAR },
+        { id: 3, icon: <FontAwesomeIcon icon={faCog} size="lg" />, label: 'Settings', link: PATH.IFEATUREPAGE },
+        { id: 4, icon: <FontAwesomeIcon icon={faUser} size="lg" />, label: 'Profile', link: PATH.IFEATUREPAGE },
     ];
 
     return (

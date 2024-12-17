@@ -10,6 +10,7 @@ export const api = axios.create({
     withCredentials: true,
 });
 
+
 const onRequest = async (config: AxiosRequestConfig): Promise<any> => {
     const token = localStorage.getItem(TOKEN);
     if (!token) return config;
@@ -18,6 +19,7 @@ const onRequest = async (config: AxiosRequestConfig): Promise<any> => {
         headers: { ...config.headers, Authorization: `Bearer ${JSON.parse(localStorage.getItem(TOKEN) || "[]")}` },
     };
 };
+
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
     if (error.response?.status === 401) {
