@@ -7,6 +7,7 @@ import user_image from '../assets/user.jpeg';
 import Avatar from './Avatar';
 import Typing from './Typing';
 import "./css/ChatBox.css"
+import { createChat } from '../api/chat.api';
 
 function ChatBotComponent() {
   const [messages, setMessages] = useState<{ sender: 'user' | 'bot'; text: string }[]>([]);
@@ -16,17 +17,15 @@ function ChatBotComponent() {
   const [isLoading, setLoading] = useState<boolean>(false);
   const chatboxRef = useRef<HTMLDivElement>(null);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (input.trim()) {
       setMessages([...messages, { sender: 'user', text: input }]);
       setInput('');
       setLoading(true);
 
-      setTimeout(() => {
-        const botMessage = callAPI();
-        setLoading(false);
-        displayTypingEffect(botMessage);
-      }, 1000);
+      const botMessage = await callAPI();
+      setLoading(false);
+      displayTypingEffect(botMessage);
     }
   };
 
@@ -45,8 +44,15 @@ function ChatBotComponent() {
     }, 10);
   };
 
-  const callAPI = () => {
-    return "I don't have an answer for that, but it's a great question!";
+  const callAPI = async () => {
+      try{
+        const response = await createChat({message: input});
+        return response.data.data;
+      }
+      catch(err){
+        console.log(err);
+        return "I'm sorry, I don't understand that.";
+      }
   };
 
   const handleShowChatBox = () => {
@@ -96,7 +102,7 @@ function ChatBotComponent() {
           <div className='chatbox-input'>
             <div className='chat-footer'>
               <input
-                className='chat-input'
+                className='chat-input text-black'
                 type='text'
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
