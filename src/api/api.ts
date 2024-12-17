@@ -5,10 +5,17 @@ import { TOKEN } from "../constants/Common";
 export const api = axios.create({
     headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${JSON.parse(localStorage.getItem(TOKEN) || "[]")}`,
     },
     baseURL: SERVER_ADDR,
     withCredentials: true,
+});
+
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem(TOKEN);
+    if (token) {
+        config.headers.Authorization = `Bearer ${JSON.parse(token)}`;
+    }
+    return config;
 });
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
