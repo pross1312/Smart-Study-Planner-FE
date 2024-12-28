@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import { useAuth } from "../component/AuthContext";
-import {deleteTaskFetch, upadteTaskFetch} from "../api/task";
+import { deleteTaskFetch, updateTaskFetch } from "../api/task";
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { Task, TaskStatus } from "../api/Response";
@@ -40,11 +40,11 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
             return;
         }
         onUpdate(updatedTask);
-        const response = await upadteTaskFetch(updatedTask, auth.getAccessToken() || "[]", updatedTask.id);
-        if (response?.success == true) {
-            alert("update successful")
+        const response = await updateTaskFetch(updatedTask, auth.getAccessToken() || "[]", updatedTask.id);
+        if (response?.success === true) {
+            alert("Update successful");
         } else {
-            alert(response?.data)
+            alert(response?.data);
         }
         handleClose();
     };
@@ -52,9 +52,9 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
     const handleDelete = async () => {
         const userConfirmed = window.confirm("Do you want to delete this task?");
         if (!userConfirmed) {
-            return; // Exit if the user cancels
+            return;
         }
-    
+
         const response = await deleteTaskFetch(auth.getAccessToken() || "[]", task.id);
         if (response?.success === true) {
             alert("Delete successful");
@@ -67,14 +67,13 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
 
     return (
         <>
-            <div style={{ display: "inline-flex", alignItems: "center" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", width: '5%' }}>
                 <div
                     onClick={handleShow}
                     style={{
                         display: "inline-flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        width: "38px",
                         height: "38px",
                         borderRadius: "5px",
                         color: "black",
@@ -85,7 +84,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                     onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
                     onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                 >
-                    <FontAwesomeIcon size="xl" icon={faEdit} />
+                    <FontAwesomeIcon size="xl" icon={faEdit} style={{ color: '#1c5500' }} />
                 </div>
 
                 {/* Delete Task Icon */}
@@ -95,7 +94,6 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                         display: "inline-flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        width: "38px",
                         height: "38px",
                         borderRadius: "5px",
                         color: "black",
@@ -106,7 +104,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                     onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
                     onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                 >
-                    <FontAwesomeIcon size="xl" icon={faTrash} />
+                    <FontAwesomeIcon size="xl" icon={faTrash} style={{ color: 'rgb(180 35 24)' }} />
                 </div>
             </div>
 
@@ -176,35 +174,56 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                                 value={updatedTask.priority}
                                 onChange={handleChange}
                             >
-                                <option>HIGH</option>
-                                <option>MEDIUM</option>
-                                <option>LOW</option>
+                                <option value="HIGH">High</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="LOW">Low</option>
                             </Form.Select>
                         </Form.Group>
 
-                        <Form.Group
-                            className="mb-3 d-flex flex-column"
-                            controlId="taskEstimateTime"
-                        >
-                            <Form.Label>Estimate Time</Form.Label>
+                        {/* Start Time */}
+                        <Form.Group className="mb-3 d-flex flex-column" controlId="taskStartTime">
+                            <Form.Label>Start Time</Form.Label>
                             <DatePicker
                                 selected={
-                                    updatedTask.estimate_time
-                                        ? new Date(updatedTask.estimate_time)
+                                    updatedTask.start_time
+                                        ? new Date(updatedTask.start_time * 1000)
                                         : null
                                 }
                                 onChange={(time) =>
                                     setUpdatedTask((prev) => ({
                                         ...prev,
-                                        estimateTime: time?.toISOString() || "",
+                                        startTime: time?.toISOString() || "",
                                     }))
                                 }
                                 showTimeSelect
-                                showTimeSelectOnly
                                 timeFormat="HH:mm"
                                 timeIntervals={15}
                                 dateFormat="HH:mm"
-                                placeholderText="Select estimated time"
+                                placeholderText="Select start time"
+                                className="form-control"
+                            />
+                        </Form.Group>
+
+                        {/* End Time */}
+                        <Form.Group className="mb-3 d-flex flex-column" controlId="taskEndTime">
+                            <Form.Label>End Time</Form.Label>
+                            <DatePicker
+                                selected={
+                                    updatedTask.end_time
+                                        ? new Date(updatedTask.end_time * 1000)
+                                        : null
+                                }
+                                onChange={(time) =>
+                                    setUpdatedTask((prev) => ({
+                                        ...prev,
+                                        endTime: time?.toISOString() || "",
+                                    }))
+                                }
+                                showTimeSelect
+                                timeFormat="HH:mm"
+                                timeIntervals={15}
+                                dateFormat="HH:mm"
+                                placeholderText="Select end time"
                                 className="form-control"
                             />
                         </Form.Group>

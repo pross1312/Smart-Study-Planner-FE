@@ -6,7 +6,8 @@ interface Task {
     description: string;
     status: TaskStatus;
     priority: TaskPriority;
-    estimate_time: number;
+    start_time: number;
+    end_time: number;
     created_date: number; 
     updated_date: number;
     is_deleted: boolean;

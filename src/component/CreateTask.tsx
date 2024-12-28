@@ -3,7 +3,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
-import {addTaskFetch} from '../api/task'
+import { addTaskFetch } from '../api/task';
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../component/AuthContext";
@@ -13,19 +13,23 @@ interface Task {
     description: string;
     status: string;
     priority: string;
-    estimate_time: string;
+    start_time: string;
+    end_time: string;
 }
-
 
 function convertTime(timestamp: string): string {
     const date = new Date(timestamp);
-
     const hours = date.getUTCHours();
     const minutes = date.getUTCMinutes();
-
     const totalSeconds = (hours * 3600) + (minutes * 60);
     return totalSeconds.toString();
 }
+
+function convertToSeconds(dateString: string): number {
+    const date = new Date(dateString);
+    return Math.floor(date.getTime() / 1000);
+}
+
 
 interface CreateTaskModalProps {
     addTaskToList: (newTask: Task) => void;
@@ -39,7 +43,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
         description: "",
         status: "",
         priority: "Medium",
-        estimate_time: "",
+        start_time: "",
+        end_time: "",
     });
 
     const handleShow = () => setShow(true);
@@ -57,13 +62,23 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
     };
 
     const handleSubmit = async () => {
-        if (!task.name || !task.status) {
-            alert("Task Name and Status are required!");
+        console.log(task)
+        if (!task.name || !task.status || !task.start_time || !task.end_time) {
+            alert("Task Name, Status, Start Time, and End Time are required!");
             return;
         }
-        task.estimate_time = convertTime(task.estimate_time);
-        const response = await addTaskFetch(task, auth.getAccessToken() || '');
-        alert(response?.data)
+        
+        const taskReq = {
+            name: task.name,
+            description: task.description,
+            status: task.status,
+            priority: task.priority,
+            start_time: convertToSeconds(task.start_time),
+            end_time: convertToSeconds(task.end_time)
+        }
+        
+        const response = await addTaskFetch(taskReq, auth.getAccessToken() || '');
+        alert(response?.data);
         addTaskToList(task);
         handleClose();
     };
@@ -77,8 +92,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
                     display: "inline-flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    width: "38px",
-                    height: "38px",
+                    width: "35px",
+                    height: "35px",
                     backgroundColor: "#5051F9",
                     borderRadius: "5px",
                     color: "white",
@@ -112,7 +127,6 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
                             />
                         </Form.Group>
 
-                        {/* Description */}
                         <Form.Group className="mb-3" controlId="taskDescription">
                             <Form.Label>Description</Form.Label>
                             <Form.Control
@@ -125,7 +139,6 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
                             />
                         </Form.Group>
 
-                        {/* Status */}
                         <Form.Group className="mb-3" controlId="taskStatus">
                             <Form.Label>Status</Form.Label>
                             <div className="status-options">
@@ -155,7 +168,6 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
                             </div>
                         </Form.Group>
 
-                        {/* Priority */}
                         <Form.Group className="mb-3" controlId="taskPriority">
                             <Form.Label>Priority</Form.Label>
                             <Form.Select
@@ -163,24 +175,36 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
                                 value={task.priority}
                                 onChange={handleChange}
                             >
-                                <option>HIGH</option>
-                                <option>MEDIUM</option>
-                                <option>LOW</option>
+                                <option value="HIGH">High</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="LOW">Low</option>
                             </Form.Select>
                         </Form.Group>
 
-                        {/* Estimate Time */}
-                        <Form.Group className="mb-3 d-flex flex-column" controlId="taskEstimate_time">
-                            <Form.Label>Estimate Time</Form.Label>
+                        <Form.Group className="mb-3 d-flex flex-column" controlId="taskStart_time">
+                            <Form.Label>Start Time</Form.Label>
                             <DatePicker
-                                selected={task.estimate_time ? new Date(task.estimate_time) : null}
-                                onChange={(time) => setTask(prev => ({ ...prev, estimate_time: time?.toISOString() || '' }))}
+                                selected={task.start_time ? new Date(task.start_time) : null}
+                                onChange={(time) => setTask(prev => ({ ...prev, start_time: time?.toISOString() || '' }))}
                                 showTimeSelect
-                                showTimeSelectOnly
                                 timeFormat="HH:mm"
                                 timeIntervals={15}
-                                dateFormat="HH:mm"
-                                placeholderText="Select estimated time"
+                                dateFormat="yyyy-MM-dd HH:mm"
+                                placeholderText="Select start date"
+                                className="form-control"
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3 d-flex flex-column" controlId="taskEnd_time">
+                            <Form.Label>End Time</Form.Label>
+                            <DatePicker
+                                selected={task.end_time ? new Date(task.end_time) : null}
+                                onChange={(time) => setTask(prev => ({ ...prev, end_time: time?.toISOString() || '' }))}
+                                showTimeSelect
+                                timeFormat="HH:mm"
+                                timeIntervals={15}
+                                dateFormat="yyyy-MM-dd HH:mm"
+                                placeholderText="Select end date"
                                 className="form-control"
                             />
                         </Form.Group>

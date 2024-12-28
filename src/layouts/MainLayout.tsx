@@ -20,7 +20,6 @@ export default function () {
                 />
             </div>
             <div style={{ flex: 1 }}>
-                <Header />
                 <Outlet />
             </div>
         </div>
