@@ -1,9 +1,9 @@
 import { ResponseFormat } from "../utils/ResponseFormat";
 import { SERVER_ADDR } from "../config/config";
 
-export const listTaskFetch = async (currentPage: number, tasksPerPage: number, statusFilter: string | "", priorityFilter: string | "", token: string): Promise<ResponseFormat | null> => {
+export const listTaskFetch = async (currentPage: number, tasksPerPage: number, statusFilter: string | "", priorityFilter: string | "", token: string, searchQuery: string): Promise<ResponseFormat | null> => {
   try {
-    const response = await fetch(`${SERVER_ADDR}/task?page=${currentPage}&size=${tasksPerPage}&status=${statusFilter}&priority=${priorityFilter}`, {
+    const response = await fetch(`${SERVER_ADDR}/task?page=${currentPage}&size=${tasksPerPage}&status=${statusFilter}&priority=${priorityFilter}&search=${searchQuery}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -26,7 +26,7 @@ export const listTaskFetch = async (currentPage: number, tasksPerPage: number, s
   return null;
 };
 
-export const addTaskFetch = async (taskData: { name: string, description: string; status: string; priority: string, estimate_time: string }, token: string): Promise<ResponseFormat | null> => {
+export const addTaskFetch = async (taskData: { name: string, description: string; status: string; priority: string, start_time: number, end_time: number }, token: string): Promise<ResponseFormat | null> => {
   try {
     const response = await fetch(`${SERVER_ADDR}/task`, {
       method: "POST",
@@ -52,7 +52,7 @@ export const addTaskFetch = async (taskData: { name: string, description: string
   return null;
 };
 
-export const upadteTaskFetch = async (taskData: { name: string, description: string; status: string; priority: string, estimate_time: number}, token: string, id: number): Promise<ResponseFormat | null> => {
+export const updateTaskFetch = async (taskData: { name: string, description: string; status: string; priority: string, estimate_time: number}, token: string, id: number): Promise<ResponseFormat | null> => {
   try {
     const response = await fetch(`${SERVER_ADDR}/task/${id}`, {
       method: "PUT",

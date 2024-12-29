@@ -1,17 +1,43 @@
 import { useState, useEffect } from 'react';
-import { Card, ListGroup, Button, Form } from 'react-bootstrap';
+import { ListGroup, Button, Form } from 'react-bootstrap';
 import './css/task.css';
 import { listTaskFetch } from '../api/task'
 import { useAuth } from "../store/AuthContext";
 import CreateTaskModal from "../component/CreateTask"
 import UpdateTaskModal from "../component/UpdateTask"
 import { Task } from '../api/Response';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
-function formatSecondsToHoursMinutes(seconds: number) {
-    const hours = Math.floor(seconds / 3600); // Get the hours
-    const minutes = Math.floor((seconds % 3600) / 60); // Get the remaining minutes
+function formatStatus(status) {
+    return status
+        .toLowerCase()
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
 
-    return `${hours} hours ${minutes} minutes`;
+function formatDate(timestamp) {
+    const date = new Date(timestamp * 1000);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const day = date.getDate();
+    const year = date.getFullYear();
+    const suffix = getDaySuffix(day);
+    return `${hours}:${minutes} ${month} ${day}${suffix} ${year}`;
+}
+
+function getDaySuffix(day) {
+    if (day >= 11 && day <= 13) {
+        return 'th';
+    }
+    switch (day % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+    }
 }
 
 const TaskList = () => {
@@ -19,14 +45,15 @@ const TaskList = () => {
     const [tasks, setTasks] = useState([] as Task[]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [tasksPerPage, setTasksPerPage] = useState(8);
+    const [tasksPerPage, setTasksPerPage] = useState(7);
     const [totalPages, setTotalPages] = useState(1);
     const [statusFilter, setStatusFilter] = useState("");
     const [priorityFilter, setPriorityFilter] = useState("");
-    
+    const [searchQuery, setSearchQuery] = useState("");
+
     useEffect(() => {
         if (statusFilter || priorityFilter) {
-            setTasksPerPage(8);
+            setTasksPerPage(7);
             setCurrentPage(1);
         }
     }, [statusFilter, priorityFilter]);
@@ -34,10 +61,17 @@ const TaskList = () => {
     const fetchTasks = async () => {
         try {
             setLoading(true);
-            const response = await listTaskFetch(currentPage, tasksPerPage, statusFilter, priorityFilter, auth.getAccessToken() || '');
+            const response = await listTaskFetch(
+                currentPage, 
+                tasksPerPage, 
+                statusFilter, 
+                priorityFilter, 
+                auth.getAccessToken() || '', 
+                searchQuery
+            );
             const listTask = response?.data.tasks;
             setTasks(listTask);
-            setTotalPages(Math.ceil(response?.data.total.count/ tasksPerPage))
+            setTotalPages(Math.ceil(response?.data.total.count / tasksPerPage));
             setLoading(false);
         } catch (error) {
             console.error('Error fetching tasks:', error);
@@ -45,13 +79,22 @@ const TaskList = () => {
         }
     };
 
-
     useEffect(() => {
         setLoading(true);
         fetchTasks();
         setLoading(false);
-
     }, [currentPage, tasksPerPage, statusFilter, priorityFilter]);
+
+    const handleSearch = () => {
+        setCurrentPage(1);
+        fetchTasks();
+    };
+
+    const handleSearchKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
+    };
 
     const addTaskToList = () => {
         setLoading(true);
@@ -73,14 +116,37 @@ const TaskList = () => {
     };
 
     return (
-        <div className="container m-0 d-flex" style={{backgroundColor: '#F3F4F8', padding: '24px 41px', height: '92%', flexDirection: 'column', justifyContent: 'space-between'}}>
+        <div className="container m-0 d-flex" style={{padding: '0px 0px 0 41px ', height: '92%', flexDirection: 'column', justifyContent: 'space-between'}}>
             <div>
-                <div className='d-flex justify-content-between align-items-center'>
-                    <h2>🔥 Task List</h2>
-                    <div className="filters d-flex">
-                        <Form.Group className="d-flex align-items-center justify-content-center" controlId="statusFilter">
-                            <div>Status</div>
-                            <Form.Control as="select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                <div className="header-title">Task List 🔥</div>
+                <div className="header-container">
+                    <div className="search-box d-flex align-items-center">
+                        <input
+                            style={{fontSize: '14px', height: '38px'}}
+                            type="text"
+                            placeholder="Search..."
+                            className="form-control"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyPress={handleSearchKeyPress}
+                        />
+                        <button className="btn btn-outline-secondary ml-2" onClick={handleSearch}>
+                            <FontAwesomeIcon icon={faSearch} />
+                        </button>
+                    </div>
+                    <div className="filters">
+                        <Form.Group className="form-group" controlId="statusFilter" >
+                            <Form.Control
+                                as="select"
+                                value={statusFilter}
+                                onChange={(e) => {
+                                        setStatusFilter(e.target.value)
+                                        setCurrentPage(1)
+                                    }
+                                }
+                                style={{width: '88px', fontSize: '14px'}} 
+                            >
+                                <option value="" disabled hidden>Status ↓</option>
                                 <option value="">All</option>
                                 <option value="IN_PROGRESS">In progress</option>
                                 <option value="DONE">Done</option>
@@ -88,48 +154,82 @@ const TaskList = () => {
                             </Form.Control>
                         </Form.Group>
 
-                        <Form.Group className="d-flex align-items-center justify-content-center" style={{marginLeft: '10px'}} controlId="priorityFilter">
-                            <div style={{margin: 0}}>Priority</div>
-                            <Form.Control as="select" value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
+                        <Form.Group className="form-group" controlId="priorityFilter">
+                            <Form.Control
+                                as="select"
+                                value={priorityFilter}
+                                onChange={(e) => {
+                                    setPriorityFilter(e.target.value)
+                                    setCurrentPage(1)
+                                    }
+                                }
+                                style={{fontSize: '14px'}}
+                            >
+                                <option value="" disabled hidden>
+                                    Priority ↓
+                                </option>
                                 <option value="">All</option>
                                 <option value="LOW">Low</option>
                                 <option value="MEDIUM">Medium</option>
                                 <option value="HIGH">High</option>
                             </Form.Control>
                         </Form.Group>
-                        <CreateTaskModal addTaskToList={addTaskToList} />
+                        <CreateTaskModal className="create-task-modal" addTaskToList={addTaskToList} />
                     </div>
                 </div>
-                
 
                 {loading ? (
                     <p>Loading tasks...</p>
                 ) : (
-                    <ListGroup>
-                        {tasks?.map(task => (
-                            <Card className='mt-3' style={{ display: 'flex'}} key={task.id}>
-                                <Card.Body className={`priority-${task.priority?.toLowerCase()}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '5px', height: '60px'}}>
-                                    <div style={{ display: 'flex' }}>
-                                        <div style={{
-                                            fontWeight: 700,
-                                            width: '100px',
-                                            marginRight: '200px',
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis'
-                                        }}>{task.name}</div>
-                                        <div style={{ width: '150px', marginRight: '200px' }}>{task.status}</div>
-                                        <div>{formatSecondsToHoursMinutes(task.estimate_time)}</div>
+                        <ListGroup className='group-task'>
+                            <div style={{height: '42px', fontSize: '12px', backgroundColor: '#f2f4f7'}} className="task-details">
+                                <div className="task-field task-name hover-detail">Name</div>
+                                <div className="task-field task-status hover-detail">Status</div>
+                                <div className="task-field task-status hover-detail">Priority</div>
+                                <div className="task-field task-estimate-time hover-detail">Start Time</div>
+                                <div className="task-field task-estimate-time hover-detail">End Time</div>
+                                <div className="task-field task-description hover-detail">Description</div>
+                                <div></div>
+                            </div>
+                            {tasks?.map(task => (
+                                <div className="task-details" key={task.id}>
+                                    <div className="task-field task-name hover-detail" style={{fontWeight: '600'}}>
+                                        {task.name}
+                                        <span className="tooltip">{task.name}</span>
                                     </div>
+
+                                    <div className="task-field task-status hover-detail">
+                                        {formatStatus(task.status)}
+                                        <span className="tooltip">{formatStatus(task.status)}</span>
+                                    </div>
+
+                                    <div className="task-field task-status hover-detail">
+                                        <div className={`priority-${task.priority?.toLowerCase()} task-field-fix`}>
+                                            {formatStatus(task.priority)}
+                                        </div>
+                                    </div>
+
+                                    <div className="task-field task-estimate-time hover-detail" style={{fontSize: '14px'}}>
+                                        {formatDate(task.start_time)}
+                                    </div>
+
+                                    <div className="task-field task-estimate-time hover-detail" style={{fontSize: '14px'}}>
+                                        {formatDate(task.end_time)}
+                                    </div>
+
+                                    <div className="task-field task-description hover-detail">
+                                        {task.description}
+                                        <span className="tooltip">{task.description}</span>
+                                    </div>
+
                                     <UpdateTaskModal
                                         key={task.id}
                                         task={task}
                                         onUpdate={handleUpdateTask}
                                         onDelete={handleDeleteTask}
                                     />
-                                </Card.Body>
-                            </Card>
-                        ))}
+                                </div>
+                            ))}
                     </ListGroup>
                 )}
             </div>

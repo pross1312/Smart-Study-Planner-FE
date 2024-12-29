@@ -21,3 +21,7 @@
 .status-box:hover {
     background-color: #e9ecef;
 }
+
+.form-control {
+    width: 100% !important;
+}
