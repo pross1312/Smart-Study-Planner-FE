@@ -9,7 +9,7 @@ import {
     FormControlLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../component/AuthContext";
+import { useAuth } from "../../../store/AuthContext";
 import { Navigate } from "react-router-dom";
 import auth from "../../../api/auth";
 import CustomButton from "../../../component/Button/CustomButton";

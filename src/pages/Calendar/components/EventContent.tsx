@@ -6,17 +6,17 @@ export interface EventContentProps {
     timeText: string;
 }
 
-const EventContent = ({ priority, title, timeText } : EventContentProps) => {
+const EventContent = ({ priority, title, timeText }: EventContentProps) => {
     const renderContent = () => {
         switch (priority) {
             case TaskPriority.High:
                 return (
                     <div
-                        className="bg-utility-pink-50 font-semibold min-w-[180px]
+                        className="bg-utility-pink-50 font-semibold 
                         rounded-md border border-utility-pink-200 px-2 py-1 mx-2 flex flex-row justify-between 
                         "
                     >
-                        <span className="text-utility-pink-700 font-semibold">
+                        <span className="text-utility-pink-700 font-semibold text-ellipsis">
                             {title}
                         </span>
                         <span className="text-utility-pink-600">
@@ -38,7 +38,7 @@ const EventContent = ({ priority, title, timeText } : EventContentProps) => {
             case TaskPriority.Medium:
                 return (
                     <div className="bg-utility-yellow-50 mx-2 font-semibold  rounded-md border border-utility-yellow-200 px-2 py-1 flex flex-row justify-between">
-                        <span className="text-utility-yellow-700 font-semibold text-ellipsis mr-2">
+                        <span className="text-utility-yellow-700 font-semibold text-ellipsis mr-1 whitespace-nowrap overflow-hidden">
                             {title}
                         </span>
                         <span className="text-utility-yellow-600">

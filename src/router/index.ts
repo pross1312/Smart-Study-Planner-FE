@@ -7,6 +7,7 @@ import TaskList from "../pages/Task";
 import Register from "../pages/Register";
 import IFeaturePage from "../pages/FeaturePage";
 import GoogleCallback from "../component/GoogleCallback";
+import Pomodoro from "../pages/Pomodoro/Pomodoro";
 
 const router = createBrowserRouter([
     {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
             {
                 path: PATH.TASKS,
                 Component: TaskList,
+            },
+            {
+                path: PATH.POMODORO,
+                Component: Pomodoro,
             },
             {
                 path: PATH.IFEATUREPAGE,

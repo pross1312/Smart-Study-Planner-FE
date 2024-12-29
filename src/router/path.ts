@@ -8,5 +8,6 @@ export const PATH = {
     PROFILE: "/profile",
     SETTINGS: "/settings",
     GOOGLE_CALL_BACK: "/google/callback",
+    POMODORO: "/pomodoro",
     IFEATUREPAGE: "*"
 };

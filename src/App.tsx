@@ -1,12 +1,15 @@
 import React from "react";
 import { RouterProvider } from "react-router-dom";
-import { AuthProvider } from "./component/AuthContext";
+import { AuthProvider } from "./store/AuthContext";
 import router from "./router";
+import { FocusProvider } from "./store/FocusContext";
 
 const App: React.FC = () => {
     return (
         <AuthProvider>
-            <RouterProvider router={router} />
+            <FocusProvider>
+                <RouterProvider router={router} />
+            </FocusProvider>
         </AuthProvider>
     );
 };
