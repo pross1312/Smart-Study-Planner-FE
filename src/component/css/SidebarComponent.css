@@ -1,14 +1,14 @@
 .logo {
-    margin: 24px 0 60px 0;
+    margin: 24px 0 30px 0;
     width: 64px;
 }
 
 .sidebar {
-    width: 94px;
+    width: 86px;
     display: flex;
     align-items: center;
     flex-direction: column;
-    background-color: #FBFAFF;
+    background-color: #272322;
     height: 100vh;
 }
 
@@ -27,12 +27,12 @@
 
 .box-icon {
     cursor: pointer;
-    width: 50px;
-    height: 50px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    padding: 3px;
+    user-select: none;
 }
 
 .box-icon:not(.active):hover {

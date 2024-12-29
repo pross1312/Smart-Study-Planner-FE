@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import {addTaskFetch} from '../api/task'
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAuth } from "../component/AuthContext";
+import { useAuth } from "../store/AuthContext";
 
 interface Task {
     name: string;

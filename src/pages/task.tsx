@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, ListGroup, Button, Form } from 'react-bootstrap';
 import './css/task.css';
 import { listTaskFetch } from '../api/task'
-import { useAuth } from "../component/AuthContext";
+import { useAuth } from "../store/AuthContext";
 import CreateTaskModal from "../component/CreateTask"
 import UpdateTaskModal from "../component/UpdateTask"
 import { Task } from '../api/Response';

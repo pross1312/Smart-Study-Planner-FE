@@ -4,13 +4,11 @@ function epochMillsToDayStr(epochMils: number): string {
     return dayStr;
 }
 
-
-// 125 minutes => 2h 5m
-function minutesToHoursMinutes(minutes: number): string {
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    return `${hours}h ${remainingMinutes}m`;
+// 7200s => 2h 0m
+function secondsToHoursMinutes(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}h ${minutes}m`;
 }
 
-
-export { epochMillsToDayStr, minutesToHoursMinutes };
+export { epochMillsToDayStr, secondsToHoursMinutes };

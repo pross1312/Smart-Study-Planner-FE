@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Sidebar from "../component/SidebarComponent";
-import Header from "../component/HeaderComponent";
 import { Outlet } from "react-router-dom";
+import { twMerge } from "tailwind-merge";
+import { useFocus } from "../store/FocusContext";
 
 export default function () {
     const [activeComponent, setActiveComponent] = useState<string>("TaskList");
@@ -11,16 +12,22 @@ export default function () {
         console.log(`Clicked on menu item: ${label}`);
     };
 
+    const { isFocusing } = useFocus();
+
     return (
-        <div style={{ display: "flex" }}>
+        <div
+            className={twMerge(
+                "flex min-h-screen max-h-screen",
+                isFocusing ? "pointer-events-none" : ""
+            )}
+        >
             <div>
                 <Sidebar
                     onMenuClick={handleMenuClick}
                     activeComponent={activeComponent}
                 />
             </div>
-            <div style={{ flex: 1 }}>
-                <Header />
+            <div className="flex-1 h-screen overflow-auto">
                 <Outlet />
             </div>
         </div>

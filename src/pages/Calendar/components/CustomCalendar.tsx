@@ -3,12 +3,10 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction"; // needed for dayClick
 import { createRef, useEffect, useRef, useState } from "react";
-import AddTaskModal from "./AddTaskModal";
-import CustomHeader from "./CustomHeader";
 import EventContent from "./EventContent";
 import {
     epochMillsToDayStr,
-    minutesToHoursMinutes,
+    secondsToHoursMinutes,
 } from "../../../utils/DateTImeUtils";
 import { createTodo, getTodos } from "../../../api/todo.api";
 import { Task, TaskStatus, Todo } from "../../../api/Response";
@@ -16,12 +14,6 @@ import { getTasks } from "../../../api/task.api";
 import moment from "moment";
 
 export function CustomCalendar() {
-    const [isOpenAddTaskModal, setIsOpenAddTaskModal] = useState(false);
-    const [modalPosition, setModalPosition] = useState<{
-        top: number;
-        left: number;
-    }>({ top: 0, left: 0 });
-
     const calendarRef = createRef<FullCalendar>();
 
     const [todos, setTodos] = useState([]);
@@ -36,13 +28,15 @@ export function CustomCalendar() {
         const fetchTodos = async () => {
             try {
                 const response = await getTodos({ startDate, endDate });
-                const transformedTodos = response.data.data.map((todo : Todo) => ({
-                    id: todo.id.toString(),
-                    name: todo.task.name,
-                    estimatedTime: todo.task.estimate_time,
-                    priority: todo.task.priority,
-                    start: epochMillsToDayStr(todo.start_date),
-                }));
+                const transformedTodos = response.data.data.map(
+                    (todo: Todo) => ({
+                        id: todo.task.id.toString(),
+                        name: todo.task.name,
+                        estimatedTime: todo.task.estimate_time,
+                        priority: todo.task.priority,
+                        start: epochMillsToDayStr(todo.start_date),
+                    })
+                );
                 console.log(transformedTodos);
 
                 setTodos(transformedTodos);
@@ -70,7 +64,7 @@ export function CustomCalendar() {
 
     // build draggable tasks
     useEffect(() => {
-        if(!taskContainerRef.current) return;
+        if (!taskContainerRef.current) return;
         new Draggable(taskContainerRef.current, {
             itemSelector: ".draggable-task",
             eventData: function (eventEl) {
@@ -90,39 +84,15 @@ export function CustomCalendar() {
         });
     }, []);
 
-    function handleDateClick(selectInfo: any) {
-        const clickedDate = selectInfo.dateStr; // Get the clicked date in string format (e.g., "2024-12-15")
-        const cellElement = document.querySelector(
-            `[data-date="${clickedDate}"]`
-        ); // Find the calendar cell element for the date
-
-        if (cellElement) {
-            const cellRect = cellElement.getBoundingClientRect(); // Get the bounding box of the calendar cell
-            const modalTop = cellRect.top + window.scrollY + 10; // Adjust modal top position relative to the cell
-            const modalLeft = cellRect.left + window.scrollX + cellRect.width; // Adjust modal left position relative to the cell
-
-            setModalPosition({
-                top: modalTop,
-                left: modalLeft,
-            });
-        } else {
-            console.error("Calendar cell not found for the clicked date.");
-        }
-
-        setIsOpenAddTaskModal(true);
-        // setSelectedInfo(selectInfo);
-    }
-
-    const handleDatesSet = (arg : any) => {
+    const handleDatesSet = (arg: any) => {
         setStartDate(arg.startStr);
         setEndDate(arg.endStr);
     };
 
     // Change task to todo when drop into calendar
-    const handleAddTodo = async (info : any) => {
+    const handleAddTodo = async (info: any) => {
         const startDate = moment(info.event.start).format("YYYY-MM-DD");
-
-        console.log(startDate);
+        console.log(123);
         try {
             await createTodo({
                 taskId: info.event.id,
@@ -134,23 +104,39 @@ export function CustomCalendar() {
         }
     };
 
+    // TODO: Update event's date
+    // handle change event date
+    const handleEventDrop = (info: any) => {
+        const { event } = info;
+
+        try {
+            // Update state
+            console.log(event);
+        } catch (error) {
+            console.error("Error while dropping event:", error);
+            info.revert(); // Revert changes on error
+        }
+    };
+
     return (
-        <div className="flex text-sm mx-4 gap-5 max-h-[90vh]">
-            <div className="flex-grow  mx-auto">
-                <CustomHeader calendarRef={calendarRef} />
+        <div className="flex text-sm p-3  gap-5 h-full max-h-full ">
+            <div className="flex-grow mx-auto">
                 <FullCalendar
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
-                    headerToolbar={false}
+                    headerToolbar={{
+                        left: "prev,next today",
+                        center: "title",
+                        right: "dayGridMonth,timeGridWeek,timeGridDay",
+                    }}
                     events={todos}
                     editable={true}
                     selectable={true}
-                    dateClick={handleDateClick}
                     eventContent={(eventInfo) => (
                         <EventContent
                             title={eventInfo.event.extendedProps.name}
-                            timeText={minutesToHoursMinutes(
+                            timeText={secondsToHoursMinutes(
                                 eventInfo.event.extendedProps.estimatedTime
                             )}
                             priority={eventInfo.event.extendedProps.priority}
@@ -159,16 +145,18 @@ export function CustomCalendar() {
                     eventReceive={(info) => {
                         handleAddTodo(info);
                     }}
+                    eventDrop={(info) => {
+                        handleEventDrop(info);
+                    }}
                     droppable={true}
                     fixedWeekCount={false}
-                    dayMaxEvents={true}
                     dayMaxEventRows={3}
                     datesSet={handleDatesSet}
                 />
             </div>
 
             <div
-                className="border border-l-2 p-2 flex flex-col w-[260px]"
+                className="border border-l-2 p-2 flex flex-col"
                 ref={taskContainerRef}
             >
                 {tasks.map((task, index) => (
@@ -182,19 +170,12 @@ export function CustomCalendar() {
                     >
                         <EventContent
                             title={task.name}
-                            timeText={minutesToHoursMinutes(task.estimate_time)}
+                            timeText={secondsToHoursMinutes(task.estimate_time)}
                             priority={task.priority}
                         />
                     </div>
                 ))}
             </div>
-
-            {isOpenAddTaskModal && (
-                <AddTaskModal
-                    onClose={setIsOpenAddTaskModal}
-                    modalPosition={modalPosition}
-                ></AddTaskModal>
-            )}
         </div>
     );
 }
