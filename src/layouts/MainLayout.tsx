@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge";
 import { useFocus } from "../store/FocusContext";
 
 export default function () {
-    const [activeComponent, setActiveComponent] = useState<string>("TaskList");
+    const [activeComponent, setActiveComponent] = useState<string>("Home");
 
     const handleMenuClick = (label: string) => {
         setActiveComponent(label);

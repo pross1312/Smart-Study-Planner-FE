@@ -1,10 +1,10 @@
-import TaskList from "./Task";
 import ChatBox from "../component/ChatBox";
+import Dashboard from "../component/DashBoard";
 
 export default function () {
     return (
         <div style={{ display: "flex" }}>
-            <TaskList />
+            <Dashboard />
             <ChatBox />
         </div>
     );

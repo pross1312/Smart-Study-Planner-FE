@@ -1,5 +1,6 @@
 import { ResponseFormat } from "../utils/ResponseFormat";
 import { SERVER_ADDR } from "../config/config";
+import { api } from "./api";
 
 export const listTaskFetch = async (currentPage: number, tasksPerPage: number, statusFilter: string | "", priorityFilter: string | "", token: string, searchQuery: string): Promise<ResponseFormat | null> => {
   try {
@@ -102,4 +103,32 @@ export const deleteTaskFetch = async (token: string, id: number): Promise<Respon
   }
 
   return null;
+};
+
+export const reportTaskFetch = async (startDate: number, endDate: number) => {
+  try {
+  
+    const response = await api.get(`/task/report`, {
+      params: {
+        startDate: startDate, 
+        endDate: endDate 
+      }
+    });
+  
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+  }
+};
+
+
+export const analyticTaskFetch = async () => {
+  try {
+  
+    const response = await api.get(`/task/analytic`);
+  
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+  }
 };

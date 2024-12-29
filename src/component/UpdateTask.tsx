@@ -8,6 +8,7 @@ import { deleteTaskFetch, updateTaskFetch } from "../api/task";
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { Task, TaskStatus } from "../api/Response";
+import { ToastContainer, toast } from 'react-toastify';
 
 interface UpdateTaskModalProps {
     task: Task;
@@ -36,15 +37,15 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
 
     const handleSubmit = async () => {
         if (!updatedTask.name || !updatedTask.status) {
-            alert("Task Name and Status are required!");
+            toast.error("Task Name and Status are required!");
             return;
         }
         onUpdate(updatedTask);
         const response = await updateTaskFetch(updatedTask, auth.getAccessToken() || "[]", updatedTask.id);
         if (response?.success === true) {
-            alert("Update successful");
+            toast.done("Update successful");
         } else {
-            alert(response?.data);
+            toast.error(response?.data);
         }
         handleClose();
     };
@@ -57,9 +58,9 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
 
         const response = await deleteTaskFetch(auth.getAccessToken() || "[]", task.id);
         if (response?.success === true) {
-            alert("Delete successful");
+            toast.done("Delete successful");
         } else {
-            alert(response?.data);
+            toast.error(response?.data);
         }
         onDelete(task.id);
         handleClose();
