@@ -7,7 +7,7 @@ import { addTaskFetch } from '../api/task';
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../store/AuthContext";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 interface Task {
     name: string;

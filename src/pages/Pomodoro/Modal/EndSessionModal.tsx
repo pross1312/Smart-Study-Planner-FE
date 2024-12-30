@@ -1,13 +1,29 @@
 import { AiOutlineClose } from "react-icons/ai";
 import "../css/EndSessionModal.css";
 
-function EndSessionModal() {
+type EndSessionModalProps = {
+    isEndSession: boolean;
+    setIsEndSession: (isFocusDone: boolean) => void;
+    setIsActive: (isActive: boolean) => void;
+    setIsOpenTimerModal: (isOpen: boolean) => void;
+    handleStartFocusTimerClick: () => void;
+};
+
+function EndSessionModal({
+    isEndSession,
+    setIsEndSession,
+    handleStartFocusTimerClick,
+}: EndSessionModalProps) {
+    if (!isEndSession) return null;
     return (
         <>
             <div className="Modal__backdrop absolute inset-0 z-20"></div>
             <div className="Modal__inner  z-30">
                 <div className="Modal__window relative p-10 w-full max-w-[580px] rounded-2xl bg-white">
-                    <button className="Modal__close">
+                    <button
+                        className="Modal__close"
+                        onClick={() => setIsEndSession(false)}
+                    >
                         <AiOutlineClose />
                     </button>
                     <div>
@@ -115,6 +131,10 @@ function EndSessionModal() {
                                     <button
                                         type="button"
                                         className="btn-a btn-a-lg btn-a-primary ml-4 w-full md:w-auto"
+                                        onClick={() => {
+                                            setIsEndSession(false);
+                                            handleStartFocusTimerClick();
+                                        }}
                                     >
                                         Start break
                                     </button>

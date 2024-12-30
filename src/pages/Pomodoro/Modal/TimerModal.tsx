@@ -2,71 +2,62 @@ import { FaPencilAlt, FaPlay, FaSquare } from "react-icons/fa";
 import { VscUnmute } from "react-icons/vsc";
 import { AiOutlineClose } from "react-icons/ai";
 import TimerInput from "../Components/TimerInput";
-import { useSound } from "use-sound";
-import startSfx from "../../../assets/sounds/startTimer.mp3";
-import pauseSfx from "../../../assets/sounds/pauseTimer.mp3";
-import timesUpSfx from "../../../assets/sounds/timesUp.mp3";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useFocus } from "../../../store/FocusContext";
 import { IoMdPause } from "react-icons/io";
+import useSound from "use-sound";
+import timesUpSfx from "../../../assets/sounds/timesUp.mp3";
 
 interface TimerModalProps {
     isOpenModal: boolean;
     setIsOpenModal: (isOpen: boolean) => void;
+    isFocusDone: boolean;
+    setIsFocusDone: (isFocusDone: boolean) => void;
     shortLength: number;
     onClickPlusTime: () => void;
     onClicKMinusTime: () => void;
     onClickPlusBreakTime: () => void;
     onClicKMinusBreakTime: () => void;
-    pomoLength: number;
+    isActive: boolean;
+    setIsActive: (isActive: boolean) => void;
+    buttonText: string;
+    setButtonText: (text: string) => void;
+    volume: number;
+    secondsLeft: number;
+    setSecondsLeft: (secondsLeft: number) => void;
+    handleStartFocusTimerClick: () => void;
+    handleStopFocusTimer: () => void;
+    handlePauseFocusTimer: () => void;
 }
 const TimerModal = ({
     isOpenModal,
     setIsOpenModal,
+    setIsFocusDone,
+    isActive,
+    setIsActive,
+    buttonText,
     shortLength,
     onClickPlusTime,
     onClicKMinusTime,
     onClickPlusBreakTime,
     onClicKMinusBreakTime,
-    pomoLength,
+    volume,
+    secondsLeft,
+    setSecondsLeft,
+    handleStartFocusTimerClick,
+    handleStopFocusTimer,
+    handlePauseFocusTimer,
 }: TimerModalProps) => {
     if (!isOpenModal) return null;
 
-    const [secondsLeft, setSecondsLeft] = useState(pomoLength * 60);
-
-    const [volume, setVolume] = useState(1);
-    const [isActive, setIsActive] = useState(false);
-    const [buttonText, setButtonText] = useState("START");
-    const [isEndSession, setIsEndSession] = useState(true);
-
     const { isFocusing, setIsFocusing } = useFocus();
-
-    const [play] = useSound(startSfx, {
-        interrupt: true,
-        volume: volume,
-    });
-
-    const [pause] = useSound(pauseSfx, {
-        interupt: true,
-        volume: volume,
-    });
 
     const [timesUp] = useSound(timesUpSfx, {
         volume: volume,
     });
 
     useEffect(() => {
-        setSecondsLeft(pomoLength * 1);
-    }, [pomoLength]);
-
-    useEffect(() => {
         if (isActive) {
-            const originalWindowOpen = window.open;
-            window.open = (...args) => {
-                alert("Không thể mở tab mới trong thời gian tập trung!");
-                return null;
-            };
-
             const interval = setInterval(() => {
                 setSecondsLeft((secondsLeft) => secondsLeft - 1);
             }, 1000);
@@ -74,12 +65,13 @@ const TimerModal = ({
             if (secondsLeft === 0) {
                 clearInterval(interval);
                 setIsActive(false);
+                setIsFocusDone(true);
+                setIsFocusing(false);
                 timesUp();
             }
 
             return () => {
                 clearInterval(interval);
-                window.open = originalWindowOpen;
             };
         }
     }, [isActive, secondsLeft, timesUp]);
@@ -93,28 +85,6 @@ const TimerModal = ({
             .padStart(2, "0");
         const secs = (seconds % 60).toString().padStart(2, "0");
         return `${hours}:${minutes}:${secs}`;
-    };
-
-    const handleStartFocusTimerClick = () => {
-        if (isActive) {
-            pause();
-        } else {
-            play();
-        }
-        setIsActive(!isActive);
-        setIsFocusing(!isFocusing);
-        setButtonText(isActive ? "RESUME" : "PAUSE");
-    };
-
-    const handleStopFocusTimer = () => {
-        setIsActive(false);
-        setIsFocusing(!isFocusing);
-        setButtonText("START");
-        setSecondsLeft(pomoLength * 60);
-    };
-
-    const handlePauseFocusTimer = () => {
-        setIsActive(false);
     };
 
     return (
