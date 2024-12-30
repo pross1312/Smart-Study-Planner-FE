@@ -1,7 +1,6 @@
 import { useState } from "react";
 import CustomButton from "./Components/CustomButton";
 import ConfigButton from "./Components/ConfigButton";
-import Sidebar from "../../component/SidebarComponent";
 import { FaPencilAlt } from "react-icons/fa";
 import { SlPicture } from "react-icons/sl";
 import { LuMusic } from "react-icons/lu";
@@ -12,6 +11,7 @@ import MusicModal from "./Modal/MusicModal";
 import Quotes from "./Components/Quotes";
 import QuotesModal from "./Modal/QuotesModal";
 import TimerModal from "./Modal/TimerModal";
+import EndSessionModal from "./Modal/EndSessionModal";
 
 export enum ModalType {
     Timer,
@@ -147,6 +147,8 @@ function Pomodoro() {
                 pomoLength={pomoLength}
             />
             <Quotes quote={quote} isOpen={isHideQuotes} />
+
+            {true && <EndSessionModal />}
         </div>
     );
 }

@@ -37,6 +37,7 @@ const TimerModal = ({
     const [volume, setVolume] = useState(1);
     const [isActive, setIsActive] = useState(false);
     const [buttonText, setButtonText] = useState("START");
+    const [isEndSession, setIsEndSession] = useState(true);
 
     const { isFocusing, setIsFocusing } = useFocus();
 
@@ -55,7 +56,7 @@ const TimerModal = ({
     });
 
     useEffect(() => {
-        setSecondsLeft(pomoLength * 60);
+        setSecondsLeft(pomoLength * 1);
     }, [pomoLength]);
 
     useEffect(() => {
@@ -107,80 +108,87 @@ const TimerModal = ({
 
     const handleStopFocusTimer = () => {
         setIsActive(false);
-        setIsFocusing(false);
+        setIsFocusing(!isFocusing);
         setButtonText("START");
+        setSecondsLeft(pomoLength * 60);
+    };
+
+    const handlePauseFocusTimer = () => {
+        setIsActive(false);
     };
 
     return (
-        <div className="flex justify-between w-full bg-black bg-opacity-50">
-            <div className="fixed flex items-center justify-center ">
-                <div className="transition-opacity duration-250 ease-in-out w-[268px] backdrop-blur bg-c-gray-800 p-6 rounded-2xl bg-opacity-90 mb-3 text-white">
-                    <div className="flex justify-between">
-                        <div className="flex gap-2 items-center justify-center">
-                            <FaPencilAlt className="text-sm" />
-                            <span>Personal timer</span>
-                        </div>
-                        <div className="flex gap-2 items-center justify-center">
-                            <button>
-                                <VscUnmute />
-                            </button>
-                            <button onClick={() => setIsOpenModal(false)}>
-                                <AiOutlineClose />
-                            </button>
-                        </div>
-                    </div>
-                    {isFocusing ? (
-                        <div className="flex items-center justify-between">
-                            <div className="my-2 text-[32px] font-bold leading-[38px] tracking-[2px]">
-                                {formatTimeLeft(secondsLeft)}
+        <>
+            <div className="flex justify-between w-full bg-black bg-opacity-50">
+                <div className="fixed flex items-center justify-center ">
+                    <div className="transition-opacity duration-250 ease-in-out w-[268px] backdrop-blur bg-c-gray-800 p-6 rounded-2xl bg-opacity-90 mb-3 text-white">
+                        <div className="flex justify-between">
+                            <div className="flex gap-2 items-center justify-center">
+                                <FaPencilAlt className="text-sm" />
+                                <span>Personal timer</span>
                             </div>
-                            <div>
-                                <button
-                                    className="rounded-lg hover:bg-white/10 mr-4 pointer-events-auto"
-                                    title="Stop the timer"
-                                    onClick={handleStopFocusTimer}
-                                >
-                                    <FaSquare />
+                            <div className="flex gap-2 items-center justify-center">
+                                <button>
+                                    <VscUnmute />
                                 </button>
-                                <button
-                                    className="rounded-lg hover:bg-white/10 pointer-events-auto"
-                                    title="Pause the timer"
-                                    onClick={() => setIsActive(!isActive)}
-                                >
-                                    {isActive ? <IoMdPause /> : <FaPlay />}
+                                <button onClick={() => setIsOpenModal(false)}>
+                                    <AiOutlineClose />
                                 </button>
                             </div>
                         </div>
-                    ) : (
-                        <>
-                            <div className="text-white mt-3">
-                                <TimerInput
-                                    header="Focus time (min)"
-                                    time={formatTimeLeft(secondsLeft)}
-                                    onCLickMinus={onClicKMinusTime}
-                                    onClickPlus={onClickPlusTime}
-                                />
+                        {isFocusing ? (
+                            <div className="flex items-center justify-between">
+                                <div className="my-2 text-[32px] font-bold leading-[38px] tracking-[2px]">
+                                    {formatTimeLeft(secondsLeft)}
+                                </div>
+                                <div>
+                                    <button
+                                        className="rounded-lg hover:bg-white/10 mr-4 pointer-events-auto"
+                                        title="Stop the timer"
+                                        onClick={handleStopFocusTimer}
+                                    >
+                                        <FaSquare />
+                                    </button>
+                                    <button
+                                        className="rounded-lg hover:bg-white/10 pointer-events-auto"
+                                        title="Pause the timer"
+                                        onClick={handlePauseFocusTimer}
+                                    >
+                                        {isActive ? <IoMdPause /> : <FaPlay />}
+                                    </button>
+                                </div>
                             </div>
-                            <div className="text-white mt-3">
-                                <TimerInput
-                                    header="Break time (min)"
-                                    time={formatTimeLeft(shortLength * 60)}
-                                    onCLickMinus={onClicKMinusBreakTime}
-                                    onClickPlus={onClickPlusBreakTime}
-                                />
-                            </div>
-                            <button
-                                className="mt-4 flex h-8 w-full items-center justify-center rounded-lg border-2 border-solid 
+                        ) : (
+                            <>
+                                <div className="text-white mt-3">
+                                    <TimerInput
+                                        header="Focus time (min)"
+                                        time={formatTimeLeft(secondsLeft)}
+                                        onCLickMinus={onClicKMinusTime}
+                                        onClickPlus={onClickPlusTime}
+                                    />
+                                </div>
+                                <div className="text-white mt-3">
+                                    <TimerInput
+                                        header="Break time (min)"
+                                        time={formatTimeLeft(shortLength * 60)}
+                                        onCLickMinus={onClicKMinusBreakTime}
+                                        onClickPlus={onClickPlusBreakTime}
+                                    />
+                                </div>
+                                <button
+                                    className="mt-4 flex h-8 w-full items-center justify-center rounded-lg border-2 border-solid 
                             border-white py-2 text-sm font-bold bg-transparent text-white hover:bg-white hover:text-black"
-                                onClick={handleStartFocusTimerClick}
-                            >
-                                {buttonText}
-                            </button>
-                        </>
-                    )}
+                                    onClick={handleStartFocusTimerClick}
+                                >
+                                    {buttonText}
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
