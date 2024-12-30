@@ -21,12 +21,10 @@ export default function () {
                 isFocusing ? "pointer-events-none" : ""
             )}
         >
-            <div>
-                <Sidebar
-                    onMenuClick={handleMenuClick}
-                    activeComponent={activeComponent}
-                />
-            </div>
+            <Sidebar
+                onMenuClick={handleMenuClick}
+                activeComponent={activeComponent}
+            />
             <div className="flex-1 h-screen overflow-auto">
                 <Outlet />
             </div>

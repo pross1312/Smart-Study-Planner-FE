@@ -6,7 +6,7 @@ import useSound from "use-sound";
 interface VolumnInputProps {
     icon: React.ReactNode;
     title: string;
-    soundUrl: string | null;
+    soundUrl: string;
 }
 
 const VolumnInput: React.FC<VolumnInputProps> = ({ icon, title, soundUrl }) => {

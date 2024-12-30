@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomButton from "./Components/CustomButton";
 import ConfigButton from "./Components/ConfigButton";
-import Sidebar from "../../component/SidebarComponent";
 import { FaPencilAlt } from "react-icons/fa";
 import { SlPicture } from "react-icons/sl";
 import { LuMusic } from "react-icons/lu";
@@ -12,6 +11,11 @@ import MusicModal from "./Modal/MusicModal";
 import Quotes from "./Components/Quotes";
 import QuotesModal from "./Modal/QuotesModal";
 import TimerModal from "./Modal/TimerModal";
+import EndSessionModal from "./Modal/EndSessionModal";
+import { useSound } from "use-sound";
+import startSfx from "../../assets/sounds/startTimer.mp3";
+import pauseSfx from "../../assets/sounds/pauseTimer.mp3";
+import { useFocus } from "../../store/FocusContext";
 
 export enum ModalType {
     Timer,
@@ -48,22 +52,65 @@ const quotes = [
 function Pomodoro() {
     const POMODORO_STEP = 5;
 
+    const { isFocusing, setIsFocusing } = useFocus();
+
     const [pomoLength, setPomoLength] = useState(25);
     const [shortLength, setShortLength] = useState(5);
-    const [longLength, setLongLength] = useState(15);
 
     const [isOpenTimerModal, setIsOpenTimerModal] = useState(false);
     const [isHideQuotes, setIsHideQuotes] = useState(true);
 
+    const [isActive, setIsActive] = useState(false);
+    const [buttonText, setButtonText] = useState("START");
+    const [isEndSession, setIsEndSession] = useState(true);
+    const [volume, setVolume] = useState(1);
     const [isOpenSettingModal, setIsOpenSettingModal] = useState<ModalType>(
         ModalType.CLOSED
     );
+    const [secondsLeft, setSecondsLeft] = useState(pomoLength * 1);
+
+    useEffect(() => {
+        setSecondsLeft(pomoLength * 60);
+    }, [pomoLength]);
+
+    const [play] = useSound(startSfx, {
+        interrupt: true,
+        volume: volume,
+    });
+
+    const [pause] = useSound(pauseSfx, {
+        interupt: true,
+        volume: volume,
+    });
 
     const handleShuffleQuotes = () => {
         const randomIndex = Math.floor(Math.random() * quotes.length);
         setQuote(quotes[randomIndex]);
     };
     const [quote, setQuote] = useState(quotes[0]);
+
+    const handleStartFocusTimerClick = () => {
+        if (isActive) {
+            pause();
+        } else {
+            play();
+        }
+        setIsActive(!isActive);
+        setIsFocusing(!isFocusing);
+        setButtonText(isActive ? "RESUME" : "PAUSE");
+        setIsOpenTimerModal(true);
+    };
+
+    const handleStopFocusTimer = () => {
+        setIsActive(false);
+        setIsFocusing(!isFocusing);
+        setButtonText("START");
+        setSecondsLeft(pomoLength * 60);
+    };
+
+    const handlePauseFocusTimer = () => {
+        setIsActive(!isActive);
+    };
 
     return (
         <div className="flex flex-1 relative flex-col gap-3 p-3 items-center min-h-full overflow-hidden">
@@ -121,6 +168,12 @@ function Pomodoro() {
             </div>
 
             <TimerModal
+                isActive={isActive}
+                setIsActive={setIsActive}
+                buttonText={buttonText}
+                setButtonText={setButtonText}
+                isFocusDone={isEndSession}
+                setIsFocusDone={setIsEndSession}
                 onClickPlusTime={() =>
                     setPomoLength(pomoLength + POMODORO_STEP)
                 }
@@ -144,9 +197,22 @@ function Pomodoro() {
                 isOpenModal={isOpenTimerModal}
                 setIsOpenModal={setIsOpenTimerModal}
                 shortLength={shortLength}
-                pomoLength={pomoLength}
+                secondsLeft={secondsLeft}
+                setSecondsLeft={setSecondsLeft}
+                volume={volume}
+                handleStartFocusTimerClick={handleStartFocusTimerClick}
+                handleStopFocusTimer={handleStopFocusTimer}
+                handlePauseFocusTimer={handlePauseFocusTimer}
             />
             <Quotes quote={quote} isOpen={isHideQuotes} />
+
+            <EndSessionModal
+                isEndSession={isEndSession}
+                setIsEndSession={setIsEndSession}
+                setIsActive={setIsActive}
+                setIsOpenTimerModal={setIsOpenTimerModal}
+                handleStartFocusTimerClick={handleStartFocusTimerClick}
+            />
         </div>
     );
 }

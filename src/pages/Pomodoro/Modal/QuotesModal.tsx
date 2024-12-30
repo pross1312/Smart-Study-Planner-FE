@@ -2,7 +2,6 @@ import { FaQuoteLeft, FaRegEyeSlash } from "react-icons/fa";
 import { RiCloseLargeLine } from "react-icons/ri";
 import { ModalType } from "../Pomodoro";
 import { CiShuffle } from "react-icons/ci";
-import { BiHide } from "react-icons/bi";
 import { FaRegEye } from "react-icons/fa6";
 
 interface QuotesModalProps {
