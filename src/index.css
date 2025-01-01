@@ -185,3 +185,8 @@
 .overlay-scroll-list::-webkit-scrollbar-track {
     background-color: transparent;
 }
+
+a:not([role="button"]):not(.MuiButtonBase-root) {
+    color: #4f46e5;
+    text-decoration: underline;
+}

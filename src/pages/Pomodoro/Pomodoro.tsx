@@ -62,7 +62,7 @@ function Pomodoro() {
 
     const [isActive, setIsActive] = useState(false);
     const [buttonText, setButtonText] = useState("START");
-    const [isEndSession, setIsEndSession] = useState(true);
+    const [isEndSession, setIsEndSession] = useState(false);
     const [volume, setVolume] = useState(1);
     const [isOpenSettingModal, setIsOpenSettingModal] = useState<ModalType>(
         ModalType.CLOSED
@@ -99,6 +99,12 @@ function Pomodoro() {
         setIsFocusing(!isFocusing);
         setButtonText(isActive ? "RESUME" : "PAUSE");
         setIsOpenTimerModal(true);
+    };
+
+    const handleStartBreakTimer = () => {
+        setIsActive(!isActive);
+        setButtonText("START");
+        setSecondsLeft(shortLength * 60);
     };
 
     const handleStopFocusTimer = () => {
@@ -207,6 +213,7 @@ function Pomodoro() {
             <Quotes quote={quote} isOpen={isHideQuotes} />
 
             <EndSessionModal
+                handleStartBreakTimer={handleStartBreakTimer}
                 isEndSession={isEndSession}
                 setIsEndSession={setIsEndSession}
                 setIsActive={setIsActive}

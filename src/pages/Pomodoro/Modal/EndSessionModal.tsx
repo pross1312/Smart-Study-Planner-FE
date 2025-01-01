@@ -7,12 +7,14 @@ type EndSessionModalProps = {
     setIsActive: (isActive: boolean) => void;
     setIsOpenTimerModal: (isOpen: boolean) => void;
     handleStartFocusTimerClick: () => void;
+    handleStartBreakTimer: () => void;
 };
 
 function EndSessionModal({
     isEndSession,
     setIsEndSession,
     handleStartFocusTimerClick,
+    handleStartBreakTimer,
 }: EndSessionModalProps) {
     if (!isEndSession) return null;
     return (
@@ -125,6 +127,10 @@ function EndSessionModal({
                                     <button
                                         type="button"
                                         className="btn-a btn-a-lg btn-a-secondary w-full md:w-auto"
+                                        onClick={() => {
+                                            setIsEndSession(false);
+                                            handleStartBreakTimer();
+                                        }}
                                     >
                                         Continue studying
                                     </button>
