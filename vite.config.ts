@@ -7,4 +7,7 @@ export default defineConfig({
             "@": path.resolve(__dirname, "./src"), // Map '@' to the 'src' directory
         },
     },
+    define: {
+        global: "window",
+    },
 });

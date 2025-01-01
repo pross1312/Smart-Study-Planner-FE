@@ -5,10 +5,12 @@ import PrivateRoute from "../layouts/PrivateRoute";
 import { CalendarPage } from "../pages/Calendar";
 import TaskList from "../pages/Task";
 import Register from "../pages/Register";
-import Home from '../pages/home'
+import Home from "../pages/home";
 import IFeaturePage from "../pages/FeaturePage";
 import GoogleCallback from "../component/GoogleCallback";
 import Pomodoro from "../pages/Pomodoro/Pomodoro";
+import VideoCall from "../pages/VideoCall/VideoCall";
+import ForgotPassword from "../pages/ForgotPassword";
 
 const router = createBrowserRouter([
     {
@@ -22,6 +24,14 @@ const router = createBrowserRouter([
     {
         path: PATH.GOOGLE_CALL_BACK,
         Component: GoogleCallback,
+    },
+    {
+        path: PATH.FORGOT_PASSWORD,
+        Component: ForgotPassword,
+    },
+    {
+        path: PATH.RESET_PASSWORD,
+        Component: ForgotPassword,
     },
     {
         path: "/",
@@ -46,6 +56,10 @@ const router = createBrowserRouter([
             {
                 path: PATH.IFEATUREPAGE,
                 Component: IFeaturePage,
+            },
+            {
+                path: PATH.VIDEO_CALL,
+                Component: VideoCall,
             },
         ],
     },
