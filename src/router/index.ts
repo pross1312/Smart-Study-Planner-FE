@@ -5,7 +5,8 @@ import PrivateRoute from "../layouts/PrivateRoute";
 import { CalendarPage } from "../pages/Calendar";
 import TaskList from "../pages/Task";
 import Register from "../pages/Register";
-import Home from "../pages/home";
+import UserInfo from "../pages/Profile";
+import Home from '../pages/home'
 import IFeaturePage from "../pages/FeaturePage";
 import GoogleCallback from "../component/GoogleCallback";
 import Pomodoro from "../pages/Pomodoro/Pomodoro";
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
             {
                 path: PATH.VIDEO_CALL,
                 Component: VideoCall,
+            },
+            {
+                path: PATH.PROFILE,
+                Component: UserInfo,
             },
         ],
     },

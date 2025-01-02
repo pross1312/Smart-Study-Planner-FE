@@ -15,8 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onMenuClick, activeComponent }) => {
         { id: 0, icon: <FontAwesomeIcon icon={faHome} size="lg" color='white'/>, label: 'Home', link: PATH.HOME, title: 'Home' },
         { id: 1, icon: <FontAwesomeIcon icon={faTasks} size="lg" color='white' />, label: 'TaskList', link: PATH.TASKS, title: 'Task List' },
         { id: 2, icon: <FontAwesomeIcon icon={faCalendar} size="lg" color='white'/>, label: 'Calendar', link: PATH.CALENDAR, title: 'Calendar' },
-        { id: 3, icon: <FontAwesomeIcon icon={faCog} size="lg" color='white'/>, label: 'Settings', link: PATH.IFEATUREPAGE, title: 'Settings' },
-        { id: 4, icon: <FontAwesomeIcon icon={faUser} size="lg" color='white'/>, label: 'Profile', link: PATH.IFEATUREPAGE, title: 'Profile' },
+        { id: 4, icon: <FontAwesomeIcon icon={faUser} size="lg" color='white'/>, label: 'Profile', link: PATH.PROFILE, title: 'Profile' },
         { id: 5, icon: <FontAwesomeIcon icon={faPen} size="lg" color='white'/>, label: 'Focus', link: PATH.POMODORO, title: 'Focus' },
     ];
 
