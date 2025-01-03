@@ -2,11 +2,14 @@ import { FaPencilAlt, FaPlay, FaSquare } from "react-icons/fa";
 import { VscUnmute } from "react-icons/vsc";
 import { AiOutlineClose } from "react-icons/ai";
 import TimerInput from "../Components/TimerInput";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFocus } from "../../../store/FocusContext";
 import { IoMdPause } from "react-icons/io";
 import useSound from "use-sound";
 import timesUpSfx from "../../../assets/sounds/timesUp.mp3";
+import { useSearchParams } from "react-router-dom";
+import { getTasks } from "../../../api/task.api";
+import { Task } from "../../../api/Response";
 
 interface TimerModalProps {
     isOpenModal: boolean;
@@ -56,6 +59,31 @@ const TimerModal = ({
         volume: volume,
     });
 
+    const [searchParams] = useSearchParams();
+    const taskId = searchParams.get("taskId");
+
+    const [tasks, setTasks] = useState<Task[]>([]);
+
+    let currentFocusTask;
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                if (!taskId) return;
+                const response = await getTasks();
+                setTasks(response.data.data);
+                currentFocusTask = tasks.find(
+                    (task) => task.id === Number.parseInt(taskId)
+                );
+                console.log(currentFocusTask);
+            } catch (error) {
+                console.error("Failed to fetch todos:", error);
+            }
+        };
+
+        fetchTasks();
+    }, [taskId]);
+
     useEffect(() => {
         if (isActive) {
             const interval = setInterval(() => {
@@ -91,7 +119,7 @@ const TimerModal = ({
         <>
             <div className="flex justify-between w-full bg-black bg-opacity-50">
                 <div className="fixed flex items-center justify-center ">
-                    <div className="transition-opacity duration-250 ease-in-out w-[268px] backdrop-blur bg-c-gray-800 p-6 rounded-2xl bg-opacity-90 mb-3 text-white">
+                    <div className="transition-opacity duration-250 ease-in-out w-[312px] backdrop-blur bg-c-gray-800 p-6 rounded-2xl bg-opacity-90 mb-3 text-white">
                         <div className="flex justify-between">
                             <div className="flex gap-2 items-center justify-center">
                                 <FaPencilAlt className="text-sm" />

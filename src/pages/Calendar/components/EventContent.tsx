@@ -13,6 +13,7 @@ const EventContent = ({ priority, title, timeText }: EventContentProps) => {
                 return (
                     <div
                         className="bg-utility-pink-50 font-semibold 
+                        w-full
                         rounded-md border border-utility-pink-200 px-2 py-1 mx-2 flex flex-row justify-between 
                         "
                     >

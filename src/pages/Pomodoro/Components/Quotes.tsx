@@ -7,10 +7,10 @@ function Quotes({ quote, isOpen = true }: { quote: Object; isOpen?: boolean }) {
                 textShadow: "rgba(12, 4, 3, 0.5) -6px 6px 6px",
             }}
         >
-            <h3 className="font-italic font-bold text-white">
+            <h3 className="font-italic font-bold text-2xl text-white">
                 “{quote.quote}”
             </h3>
-            <p className="text-white">{quote.author}</p>
+            <p className="text-white text-base">{quote.author}</p>
         </div>
     );
 }

@@ -1,11 +1,24 @@
 import { api } from "./api";
 import { Task } from "./Response";
 
-const getTasks = async (params: { status: string }) => {
-    return api.get("/task", { params });
+const getTasks = async (params?: {
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+}) => {
+    return api.get("/task", params ? { params } : undefined);
 };
 
-const updateTasks = async (taskId: string, updates: Task) => {
-    return api.put(`/task/${taskId}`, updates);
+const getUnAssignedTasks = async () => {
+    return api.get("/task/unassigned");
 };
-export { getTasks, updateTasks };
+
+const updateTasks = async (
+    taskId: string,
+    start_time: number,
+    end_time: number
+) => {
+    return api.put(`/task/${taskId}`, { start_time, end_time });
+};
+
+export { getTasks, updateTasks, getUnAssignedTasks };

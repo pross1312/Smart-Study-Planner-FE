@@ -16,6 +16,7 @@ import { useSound } from "use-sound";
 import startSfx from "../../assets/sounds/startTimer.mp3";
 import pauseSfx from "../../assets/sounds/pauseTimer.mp3";
 import { useFocus } from "../../store/FocusContext";
+import SessionGoalModal from "./Modal/SesssionGoalModal";
 
 export enum ModalType {
     Timer,
@@ -210,6 +211,8 @@ function Pomodoro() {
                 handleStopFocusTimer={handleStopFocusTimer}
                 handlePauseFocusTimer={handlePauseFocusTimer}
             />
+            <SessionGoalModal />
+
             <Quotes quote={quote} isOpen={isHideQuotes} />
 
             <EndSessionModal
