@@ -7,16 +7,11 @@ import EventContent from "./EventContent";
 import {
     secondsToHoursMinutes,
     epochSecondsToDayStr,
-    getStartOfDayEpoch,
-    convertToEpochSeconds,
+    getStartOfDayEpochUTC,
 } from "../../../utils/DateTImeUtils";
-import { createTodo, getTodos } from "../../../api/todo.api";
-import { Task, TaskStatus, Todo } from "../../../api/Response";
-import {
-    getTasks,
-    getUnAssignedTasks,
-    updateTasks,
-} from "../../../api/task.api";
+import { getTodos } from "../../../api/todo.api";
+import { Task } from "../../../api/Response";
+import { getUnAssignedTasks, updateTasks } from "../../../api/task.api";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
@@ -141,13 +136,14 @@ export function CustomCalendar() {
             const newDate = moment(event.start).format("YYYY-MM-DD");
 
             const task = todos.find((t) => t.id === event.id);
-            if (task === undefined) return;
+            if (!task) return;
 
             const time =
-                task?.start_time - getStartOfDayEpoch(task?.start_time);
+                task?.start_time - getStartOfDayEpochUTC(task?.start_time);
 
             console.log(task);
-            console.log(getStartOfDayEpoch(task?.start_time));
+            console.log(getStartOfDayEpochUTC(task?.start_time));
+            console.log("time", time);
 
             await updateTasks(
                 info.event.id,
@@ -188,7 +184,7 @@ export function CustomCalendar() {
     };
 
     return (
-        <div className="flex text-sm p-3  gap-5 h-full max-h-full ">
+        <div className="flex text-sm p-3 gap-5 h-full max-h-full ">
             <div className="flex-grow mx-auto">
                 <FullCalendar
                     timeZone="UTC"
@@ -206,15 +202,12 @@ export function CustomCalendar() {
                     selectable={true}
                     eventContent={(eventInfo) => (
                         <div onClick={() => handleTaskClick(eventInfo)}>
-                            <EventContent
-                                title={eventInfo.event.extendedProps.name}
-                                timeText={secondsToHoursMinutes(
+                            <b>{eventInfo.event.extendedProps.name}</b>
+                            <i>
+                                {secondsToHoursMinutes(
                                     eventInfo.event.extendedProps.estimatedTime
                                 )}
-                                priority={
-                                    eventInfo.event.extendedProps.priority
-                                }
-                            />
+                            </i>
                         </div>
                     )}
                     eventReceive={(info) => {
@@ -225,7 +218,6 @@ export function CustomCalendar() {
                     }}
                     droppable={true}
                     fixedWeekCount={false}
-                    dayMaxEventRows={3}
                     datesSet={handleDatesSet}
                     eventResize={(info) => handleEventResize(info)}
                 />
@@ -255,3 +247,5 @@ export function CustomCalendar() {
         </div>
     );
 }
+
+export default CustomCalendar;

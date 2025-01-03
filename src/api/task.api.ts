@@ -1,5 +1,4 @@
 import { api } from "./api";
-import { Task } from "./Response";
 
 const getTasks = async (params?: {
     status?: string;

@@ -6,10 +6,7 @@ function epochMillsToDayStr(epochMils: number): string {
 
 function epochSecondsToDayStr(epochSeconds: number): string {
     const date = new Date(epochSeconds * 1000);
-
     const formattedDate = date.toISOString().slice(0, 19);
-
-    console.log(formattedDate);
     return formattedDate;
 }
 
@@ -20,16 +17,16 @@ function secondsToHoursMinutes(seconds: number): string {
     return `${hours}h ${minutes}m`;
 }
 
-function getStartOfDayEpoch(epochSeconds: number) {
+function getStartOfDayEpochUTC(epochSeconds: number): number {
     const date = new Date(epochSeconds * 1000);
-
-    const startOfDay = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate()
+    const startOfDayUTC = Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate()
     );
 
-    return Math.floor(startOfDay.getTime() / 1000);
+    console.log("startOfDayUTC:", new Date(startOfDayUTC).toISOString());
+    return Math.floor(startOfDayUTC / 1000);
 }
 
 function convertToEpochSeconds(datetimeStr: string) {
@@ -46,6 +43,6 @@ export {
     epochMillsToDayStr,
     secondsToHoursMinutes,
     epochSecondsToDayStr,
-    getStartOfDayEpoch,
+    getStartOfDayEpochUTC,
     convertToEpochSeconds,
 };

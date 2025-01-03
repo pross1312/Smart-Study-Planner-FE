@@ -1,5 +1,3 @@
-import { FORMERR } from "dns";
-
 export const PATH = {
     LOGIN: "/login",
     REGISTER: "/register",
@@ -13,5 +11,5 @@ export const PATH = {
     VIDEO_CALL: "/video-call",
     FORGOT_PASSWORD: "/forgot-password",
     RESET_PASSWORD: "/reset-password",
-    IFEATUREPAGE: "*"
+    IFEATUREPAGE: "*",
 };

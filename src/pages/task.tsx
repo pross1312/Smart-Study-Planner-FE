@@ -5,11 +5,11 @@ import { listTaskFetch } from '../api/task'
 import { useAuth } from "../store/AuthContext";
 import CreateTaskModal from "../component/CreateTask"
 import UpdateTaskModal from "../component/UpdateTask"
-import { Task } from '../api/Response';
+import { Task, TaskPriority, TaskStatus } from '../api/Response';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
-function formatStatus(status) {
+function formatStatus(status : TaskStatus | TaskPriority) {
     return status
         .toLowerCase()
         .split('_')
@@ -17,7 +17,7 @@ function formatStatus(status) {
         .join(' ');
 }
 
-function formatDate(timestamp) {
+function formatDate(timestamp : number) {
     const date = new Date(timestamp * 1000);
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
@@ -28,7 +28,7 @@ function formatDate(timestamp) {
     return `${hours}:${minutes} ${month} ${day}${suffix} ${year}`;
 }
 
-function getDaySuffix(day) {
+function getDaySuffix(day : any) {
     if (day >= 11 && day <= 13) {
         return 'th';
     }
@@ -90,7 +90,7 @@ const TaskList = () => {
         fetchTasks();
     };
 
-    const handleSearchKeyPress = (event) => {
+    const handleSearchKeyPress = (event ) => {
         if (event.key === 'Enter') {
             handleSearch();
         }
