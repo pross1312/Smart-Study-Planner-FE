@@ -8,7 +8,6 @@ import {
     Switch,
     FormControlLabel,
     Box,
-    Paper,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../store/AuthContext";
@@ -57,115 +56,109 @@ const LoginForm: React.FC = () => {
                 <Navigate to="/home" replace />
             ) : (
                 <div className="w-screen h-screen max-h-[1200px] flex items-center justify-center">
-                    <div className="flex w-full h-4/6 overflow-hidden rounded-0 sm:min-h-auto sm:w-auto sm:rounded-2xl sm:shadow md:w-full md:max-w-6xl">
-                        <div className="w-full h-full p-20">
-                            <div className="w-full">
-                                <p className="text-4xl font-extrabold leading-tight tracking-tight whitespace-nowrap mb-4">
-                                    Sign in
-                                </p>
+                    <div className="flex w-full h-4/6 rounded-0 sm:min-h-auto sm:w-auto sm:rounded-2xl sm:shadow md:w-full md:max-w-6xl">
+                        <div className="w-full h-full p-20 overflow-auto">
+                            <p className="text-4xl font-extrabold leading-tight tracking-tight whitespace-nowrap mb-4">
+                                Sign in
+                            </p>
 
-                                <form
-                                    onSubmit={handleSubmit(onSubmit)}
-                                    className="w-full"
-                                >
-                                    <TextField
-                                        label="Email"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        {...register("email", {
-                                            required: "Email is required",
-                                            pattern: {
-                                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                                                message: "Invalid email format",
-                                            },
-                                        })}
-                                        error={!!errors.email}
-                                        helperText={
-                                            errors.email
-                                                ? errors.email.message
-                                                : ""
-                                        }
-                                    />
-                                    <TextField
-                                        label="Password"
-                                        type="password"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        {...register("password", {
-                                            required: "Password is required",
-                                            minLength: {
-                                                value: 6,
-                                                message:
-                                                    "Password must be at least 6 characters",
-                                            },
-                                        })}
-                                        error={!!errors.password}
-                                        helperText={
-                                            errors.password
-                                                ? errors.password.message
-                                                : ""
-                                        }
-                                    />
-
-                                    <div className="flex justify-between select-none">
-                                        <div>
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={rememberMe}
-                                                        onChange={() =>
-                                                            setRememberMe(
-                                                                !rememberMe
-                                                            )
-                                                        }
-                                                        name="rememberMe"
-                                                    />
-                                                }
-                                                label="Remember me"
-                                            />
-                                        </div>
-                                        <Link
-                                            href="#"
-                                            onClick={() =>
-                                                navigate("/forgot-password")
-                                            }
-                                            className="no-underline text-blue-500 text-center"
-                                        >
-                                            Forgot Password?
-                                        </Link>
-                                    </div>
-                                    <CustomButton onClick={handleSubmit}>
-                                        {loading ? (
-                                            <CircularProgress
-                                                size={24}
-                                                color="inherit"
-                                            />
-                                        ) : (
-                                            "Login"
-                                        )}
-                                    </CustomButton>
-                                </form>
-
-                                <GoogleLoginButton
-                                    loading={loading}
-                                    handleGoogleLogin={handleGoogleLogin}
+                            <form
+                                onSubmit={handleSubmit(onSubmit)}
+                                className="w-full"
+                            >
+                                <TextField
+                                    label="Email"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    {...register("email", {
+                                        required: "Email is required",
+                                        pattern: {
+                                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                            message: "Invalid email format",
+                                        },
+                                    })}
+                                    error={!!errors.email}
+                                    helperText={
+                                        errors.email ? errors.email.message : ""
+                                    }
                                 />
-                                <div className="text-center mt-4">
-                                    <Typography variant="body2">
-                                        Don't have an account?{" "}
-                                        <Link
-                                            href="#"
-                                            onClick={() =>
-                                                navigate("/register")
+                                <TextField
+                                    label="Password"
+                                    type="password"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    {...register("password", {
+                                        required: "Password is required",
+                                        minLength: {
+                                            value: 6,
+                                            message:
+                                                "Password must be at least 6 characters",
+                                        },
+                                    })}
+                                    error={!!errors.password}
+                                    helperText={
+                                        errors.password
+                                            ? errors.password.message
+                                            : ""
+                                    }
+                                />
+
+                                <div className="flex justify-between select-none">
+                                    <div>
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    checked={rememberMe}
+                                                    onChange={() =>
+                                                        setRememberMe(
+                                                            !rememberMe
+                                                        )
+                                                    }
+                                                    name="rememberMe"
+                                                />
                                             }
-                                            underline="hover"
-                                        >
-                                            Register
-                                        </Link>
-                                    </Typography>
+                                            label="Remember me"
+                                        />
+                                    </div>
+                                    <Link
+                                        href="#"
+                                        onClick={() =>
+                                            navigate("/forgot-password")
+                                        }
+                                        className="no-underline text-blue-500 text-center"
+                                    >
+                                        Forgot Password?
+                                    </Link>
                                 </div>
+                                <CustomButton onClick={handleSubmit}>
+                                    {loading ? (
+                                        <CircularProgress
+                                            size={24}
+                                            color="inherit"
+                                        />
+                                    ) : (
+                                        "Login"
+                                    )}
+                                </CustomButton>
+                            </form>
+
+                            <GoogleLoginButton
+                                loading={loading}
+                                handleGoogleLogin={handleGoogleLogin}
+                            />
+                            <div className="text-center mt-4">
+                                <Typography variant="body2">
+                                    Don't have an account?{" "}
+                                    <Link
+                                        href="#"
+                                        onClick={() => navigate("/register")}
+                                        underline="hover"
+                                    >
+                                        Register
+                                    </Link>
+                                </Typography>
                             </div>
                         </div>
                         <div className="relative hidden min-h-full items-center justify-center overflow-hidden p-32 md:flex bg-[#1e293b]">

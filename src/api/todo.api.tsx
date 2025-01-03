@@ -6,7 +6,7 @@ export type createTodoRequest = {
 };
 
 const getTodos = async (params: { startDate: string; endDate: string }) => {
-    return api.get("/todo", { params });
+    return api.get("/task", { params });
 };
 
 const createTodo = async (body: createTodoRequest) => {

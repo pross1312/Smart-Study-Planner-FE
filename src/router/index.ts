@@ -3,14 +3,13 @@ import PublicRoute from "../layouts/PublicRoute";
 import { PATH } from "./path";
 import PrivateRoute from "../layouts/PrivateRoute";
 import { CalendarPage } from "../pages/Calendar";
-import TaskList from "../pages/Task";
-import Register from "../pages/Register";
+import TaskList from "../pages/task";
+import Register from "../pages/register";
 import UserInfo from "../pages/Profile";
-import Home from '../pages/home'
+import Home from "../pages/home";
 import IFeaturePage from "../pages/FeaturePage";
 import GoogleCallback from "../component/GoogleCallback";
 import Pomodoro from "../pages/Pomodoro/Pomodoro";
-import VideoCall from "../pages/VideoCall/VideoCall";
 import ForgotPassword from "../pages/ForgotPassword";
 
 const router = createBrowserRouter([
@@ -57,10 +56,6 @@ const router = createBrowserRouter([
             {
                 path: PATH.IFEATUREPAGE,
                 Component: IFeaturePage,
-            },
-            {
-                path: PATH.VIDEO_CALL,
-                Component: VideoCall,
             },
             {
                 path: PATH.PROFILE,
