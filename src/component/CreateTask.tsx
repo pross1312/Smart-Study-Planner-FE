@@ -7,7 +7,7 @@ import { addTaskFetch } from '../api/task';
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../store/AuthContext";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 interface Task {
     name: string;
@@ -63,7 +63,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
     };
 
     const handleSubmit = async () => {
-        if (!task.name || !task.status || !task.start_time || !task.end_time) {
+        if (!task.name || !task.status) {
             toast.error("Task Name, Status, Start Time, and End Time are required!");
             return;
         }
@@ -78,9 +78,9 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
         }
         
         const response = await addTaskFetch(taskReq, auth.getAccessToken() || '');
-        toast.done(response?.data);
+        toast.success(response?.data);
         addTaskToList(task);
-        handleClose();
+        if (response?.statusCode == 200) handleClose();
     };
 
     return (

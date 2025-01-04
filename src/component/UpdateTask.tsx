@@ -43,7 +43,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
         onUpdate(updatedTask);
         const response = await updateTaskFetch(updatedTask, auth.getAccessToken() || "[]", updatedTask.id);
         if (response?.success === true) {
-            toast.done("Update successful");
+            toast.success("Update successful");
         } else {
             toast.error(response?.data);
         }
@@ -58,7 +58,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
 
         const response = await deleteTaskFetch(auth.getAccessToken() || "[]", task.id);
         if (response?.success === true) {
-            toast.done("Delete successful");
+            toast.success("Delete successful");
         } else {
             toast.error(response?.data);
         }
@@ -185,45 +185,36 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                         <Form.Group className="mb-3 d-flex flex-column" controlId="taskStartTime">
                             <Form.Label>Start Time</Form.Label>
                             <DatePicker
-                                selected={
-                                    updatedTask.start_time
-                                        ? new Date(updatedTask.start_time * 1000)
-                                        : null
-                                }
-                                onChange={(time) =>
+                                selected={updatedTask.start_time ? new Date(updatedTask.start_time * 1000) : null}
+                                onChange={(date) =>
                                     setUpdatedTask((prev) => ({
                                         ...prev,
-                                        startTime: time?.toISOString() || "",
+                                        start_time: date ? Math.floor(date.getTime() / 1000) : null, // Save as a Unix timestamp
                                     }))
                                 }
                                 showTimeSelect
                                 timeFormat="HH:mm"
                                 timeIntervals={15}
-                                dateFormat="HH:mm"
+                                dateFormat="yyyy-MM-dd HH:mm"
                                 placeholderText="Select start time"
                                 className="form-control"
                             />
                         </Form.Group>
 
-                        {/* End Time */}
                         <Form.Group className="mb-3 d-flex flex-column" controlId="taskEndTime">
                             <Form.Label>End Time</Form.Label>
                             <DatePicker
-                                selected={
-                                    updatedTask.end_time
-                                        ? new Date(updatedTask.end_time * 1000)
-                                        : null
-                                }
-                                onChange={(time) =>
+                                selected={updatedTask.end_time ? new Date(updatedTask.end_time * 1000) : null}
+                                onChange={(date) =>
                                     setUpdatedTask((prev) => ({
                                         ...prev,
-                                        endTime: time?.toISOString() || "",
+                                        end_time: date ? Math.floor(date.getTime() / 1000) : null, // Save as Unix timestamp
                                     }))
                                 }
                                 showTimeSelect
                                 timeFormat="HH:mm"
                                 timeIntervals={15}
-                                dateFormat="HH:mm"
+                                dateFormat="yyyy-MM-dd HH:mm"
                                 placeholderText="Select end time"
                                 className="form-control"
                             />
