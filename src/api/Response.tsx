@@ -8,7 +8,7 @@ interface Task {
     priority: TaskPriority;
     start_time: number;
     end_time: number;
-    created_date: number; 
+    created_date: number;
     updated_date: number;
     is_deleted: boolean;
 }
@@ -18,7 +18,7 @@ interface Todo {
     id: number;
     user_id: number;
     task_id: string;
-    start_date: number; 
+    start_date: number;
     end_date: number;
     task: Task;
 }
@@ -40,6 +40,11 @@ export enum TaskStatus {
     ToDo = "todo",
     InProgress = "IN_PROGRESS",
     Done = "DONE",
+}
+
+export interface TaskPagination<T> {
+    tasks: T[];
+    total: { count: string };
 }
 
 // Define the specific response type for your example

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomButton from "./Components/CustomButton";
 import ConfigButton from "./Components/ConfigButton";
 import { FaPencilAlt } from "react-icons/fa";
@@ -13,10 +13,15 @@ import QuotesModal from "./Modal/QuotesModal";
 import TimerModal from "./Modal/TimerModal";
 import EndSessionModal from "./Modal/EndSessionModal";
 import { useSound } from "use-sound";
-import startSfx from "../../assets/sounds/startTimer.mp3";
-import pauseSfx from "../../assets/sounds/pauseTimer.mp3";
+import startSfx from "@/assets/sounds/startTimer.mp3";
+import pauseSfx from "@/assets/sounds/pauseTimer.mp3";
 import { useFocus } from "../../store/FocusContext";
+import { addHistory, getSetting } from "../../api/pomodoro.api";
 import SessionGoalModal from "./Modal/SesssionGoalModal";
+import { getTasks } from "../../api/task.api";
+import { useSearchParams } from "react-router-dom";
+import { Task, TaskStatus } from "../../api/Response";
+import { toast } from "react-toastify";
 
 export enum ModalType {
     Timer,
@@ -58,7 +63,7 @@ function Pomodoro() {
     const [pomoLength, setPomoLength] = useState(25);
     const [shortLength, setShortLength] = useState(5);
 
-    const [isOpenTimerModal, setIsOpenTimerModal] = useState(false);
+    const [isOpenTimerModal, setIsOpenTimerModal] = useState(true);
     const [isHideQuotes, setIsHideQuotes] = useState(true);
 
     const [isActive, setIsActive] = useState(false);
@@ -69,10 +74,118 @@ function Pomodoro() {
         ModalType.CLOSED
     );
     const [secondsLeft, setSecondsLeft] = useState(pomoLength * 1);
+    const [quote, setQuote] = useState(quotes[0]);
+    const [isOpenTaskManager, setIsOpenTaskManager] = useState(true);
+
+    const startFocusTime = useRef(0);
+
+    const [searchParams] = useSearchParams();
+    const taskId = Number.parseInt(searchParams.get("taskId") || "0");
+
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [currentTask, setCurrentTask] = useState<Task | undefined>(undefined);
+
+    const totalTaskInDay = useRef(0);
+    const totalTimeDoneInDay = useRef(0);
+
+    const [isStartBreakTimer, setIsStartBreakTimer] = useState(false);
+
+    // Initialize useEffect
+    useEffect(() => {
+        const fetchSetting = async () => {
+            try {
+                const response = await getSetting();
+                setPomoLength(+response.data.data.pomodoro_time);
+                setShortLength(+response.data.data.break_time);
+            } catch (error) {
+                console.error("Failed to fetch setting", error);
+            }
+        };
+
+        fetchSetting();
+    }, []);
 
     useEffect(() => {
-        setSecondsLeft(pomoLength * 60);
+        setSecondsLeft(pomoLength * 1);
     }, [pomoLength]);
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                console.log(taskId);
+                if (!taskId) return;
+                const response = await getTasks();
+                setTasks(response.data.tasks);
+                const currentTask = response.data.tasks.find(
+                    (task) => task.id == taskId
+                );
+                setCurrentTask(currentTask);
+
+                if (!currentTask) {
+                    toast.warning("Task not found");
+                    return;
+                }
+
+                const startOfDay = new Date();
+                startOfDay.setHours(0, 0, 0, 0); // 00:00:00
+
+                const endOfDay = new Date(startOfDay);
+                endOfDay.setHours(23, 59, 59, 999); // 23:59:59
+
+                totalTaskInDay.current = response.data.tasks.filter((task) => {
+                    const startTime = task.start_time; // start_time của task
+                    const endTime = task.end_time; // end_time của task
+
+                    // Kiểm tra start_time và end_time của task nằm trong khoảng thời gian của ngày
+                    return (
+                        startTime !== null &&
+                        startTime >= Math.floor(startOfDay.getTime() / 1000) &&
+                        startTime <= Math.floor(endOfDay.getTime() / 1000) &&
+                        endTime !== null &&
+                        endTime >= Math.floor(startOfDay.getTime() / 1000) &&
+                        endTime <= Math.floor(endOfDay.getTime() / 1000)
+                    );
+                }).length;
+
+                totalTimeDoneInDay.current = response.data.tasks.filter(
+                    (task) => {
+                        const startTime = task.start_time; // start_time của task
+                        const endTime = task.end_time; // end_time của task
+
+                        // Kiểm tra start_time và end_time của task nằm trong khoảng thời gian của ngày
+                        return (
+                            startTime !== null &&
+                            startTime >=
+                                Math.floor(startOfDay.getTime() / 1000) &&
+                            startTime <=
+                                Math.floor(endOfDay.getTime() / 1000) &&
+                            endTime !== null &&
+                            endTime >=
+                                Math.floor(startOfDay.getTime() / 1000) &&
+                            endTime <= Math.floor(endOfDay.getTime() / 1000) &&
+                            task.status === TaskStatus.Done
+                        );
+                    }
+                ).length;
+
+                const now = Math.floor(Date.now() / 1000);
+                const timeDifference = currentTask.end_time - now;
+
+                if (timeDifference > 0) {
+                    console.log("timeDifference " + timeDifference);
+                    const timeoutId = setTimeout(() => {
+                        onDeadlineReached();
+                    }, timeDifference * 1000);
+
+                    return () => clearTimeout(timeoutId);
+                } else toast.warning("Task deadline has passed");
+            } catch (error) {
+                console.error("Failed to fetch todos:", error);
+            }
+        };
+
+        fetchTasks();
+    }, [taskId]);
 
     const [play] = useSound(startSfx, {
         interrupt: true,
@@ -80,7 +193,7 @@ function Pomodoro() {
     });
 
     const [pause] = useSound(pauseSfx, {
-        interupt: true,
+        interrupt: true,
         volume: volume,
     });
 
@@ -88,7 +201,6 @@ function Pomodoro() {
         const randomIndex = Math.floor(Math.random() * quotes.length);
         setQuote(quotes[randomIndex]);
     };
-    const [quote, setQuote] = useState(quotes[0]);
 
     const handleStartFocusTimerClick = () => {
         if (isActive) {
@@ -97,15 +209,10 @@ function Pomodoro() {
             play();
         }
         setIsActive(!isActive);
-        setIsFocusing(!isFocusing);
+        setIsFocusing(true);
         setButtonText(isActive ? "RESUME" : "PAUSE");
         setIsOpenTimerModal(true);
-    };
-
-    const handleStartBreakTimer = () => {
-        setIsActive(!isActive);
-        setButtonText("START");
-        setSecondsLeft(shortLength * 60);
+        startFocusTime.current = new Date().getTime();
     };
 
     const handleStopFocusTimer = () => {
@@ -115,8 +222,46 @@ function Pomodoro() {
         setSecondsLeft(pomoLength * 60);
     };
 
+    const handleStartBreakTimer = () => {
+        setIsActive(!isActive);
+        setSecondsLeft(shortLength * 60);
+        setIsStartBreakTimer(true);
+        setIsFocusing(false);
+    };
+
+    const handleStopBreakTimer = () => {
+        setIsActive(false);
+        setIsStartBreakTimer(false);
+        setSecondsLeft(pomoLength * 60);
+    };
+
     const handlePauseFocusTimer = () => {
         setIsActive(!isActive);
+    };
+
+    useEffect(() => {
+        const createHistory = async () => {
+            if (isEndSession) {
+                const endTimer = Math.floor(new Date().getTime() / 1000);
+                const span = shortLength * 60;
+                try {
+                    await addHistory(
+                        Math.floor(startFocusTime.current / 1000),
+                        endTimer,
+                        span
+                    );
+                } catch (error) {
+                    console.error("Failed to create history", error);
+                }
+            }
+        };
+
+        createHistory();
+    }, [isEndSession]);
+
+    const onDeadlineReached = () => {
+        setIsEndSession(true);
+        setIsActive(true);
     };
 
     return (
@@ -130,7 +275,11 @@ function Pomodoro() {
                         icon={<FaPencilAlt />}
                         onClick={() => setIsOpenTimerModal(!isOpenTimerModal)}
                     />
-                    <CustomButton text="Session goal" icon={<FaPencilAlt />} />
+                    <CustomButton
+                        onClick={() => setIsOpenTaskManager(!isOpenTaskManager)}
+                        text="Session goal"
+                        icon={<FaPencilAlt />}
+                    />
                 </div>
 
                 <div className="relative  flex flex-col space-y-2 text-sm md:static md:flex-row md:space-y-0 md:space-x-2">
@@ -174,44 +323,54 @@ function Pomodoro() {
                 </div>
             </div>
 
-            <TimerModal
-                isActive={isActive}
-                setIsActive={setIsActive}
-                buttonText={buttonText}
-                setButtonText={setButtonText}
-                isFocusDone={isEndSession}
-                setIsFocusDone={setIsEndSession}
-                onClickPlusTime={() =>
-                    setPomoLength(pomoLength + POMODORO_STEP)
-                }
-                onClicKMinusTime={() =>
-                    setPomoLength(
-                        pomoLength - POMODORO_STEP > 0
-                            ? pomoLength - POMODORO_STEP
-                            : 0
-                    )
-                }
-                onClicKMinusBreakTime={() =>
-                    setShortLength(
-                        shortLength - POMODORO_STEP > 0
-                            ? shortLength - POMODORO_STEP
-                            : 0
-                    )
-                }
-                onClickPlusBreakTime={() =>
-                    setShortLength(shortLength + POMODORO_STEP)
-                }
-                isOpenModal={isOpenTimerModal}
-                setIsOpenModal={setIsOpenTimerModal}
-                shortLength={shortLength}
-                secondsLeft={secondsLeft}
-                setSecondsLeft={setSecondsLeft}
-                volume={volume}
-                handleStartFocusTimerClick={handleStartFocusTimerClick}
-                handleStopFocusTimer={handleStopFocusTimer}
-                handlePauseFocusTimer={handlePauseFocusTimer}
-            />
-            <SessionGoalModal />
+            <div className="w-full h-full flex flex-col gap-2">
+                <TimerModal
+                    isActive={isActive}
+                    setIsActive={setIsActive}
+                    buttonText={buttonText}
+                    setButtonText={setButtonText}
+                    isFocusDone={isEndSession}
+                    setIsFocusDone={setIsEndSession}
+                    onClickPlusTime={() =>
+                        setPomoLength(pomoLength + POMODORO_STEP)
+                    }
+                    onClicKMinusTime={() =>
+                        setPomoLength(
+                            pomoLength - POMODORO_STEP > 0
+                                ? pomoLength - POMODORO_STEP
+                                : 0
+                        )
+                    }
+                    onClicKMinusBreakTime={() =>
+                        setShortLength(
+                            shortLength - POMODORO_STEP > 0
+                                ? shortLength - POMODORO_STEP
+                                : 0
+                        )
+                    }
+                    onClickPlusBreakTime={() =>
+                        setShortLength(shortLength + POMODORO_STEP)
+                    }
+                    isOpenModal={isOpenTimerModal}
+                    setIsOpenModal={setIsOpenTimerModal}
+                    shortLength={shortLength}
+                    secondsLeft={secondsLeft}
+                    setSecondsLeft={setSecondsLeft}
+                    volume={volume}
+                    handleStartFocusTimerClick={handleStartFocusTimerClick}
+                    handleStopFocusTimer={handleStopFocusTimer}
+                    handlePauseFocusTimer={handlePauseFocusTimer}
+                    isStartBreakTimer={isStartBreakTimer}
+                    handleStopBreakTimer={handleStopBreakTimer}
+                />
+                <SessionGoalModal
+                    task={currentTask}
+                    isOpen={isOpenTaskManager}
+                    setIsOpen={setIsOpenTaskManager}
+                    totalTaskInDay={totalTaskInDay.current}
+                    completedTaskInDay={totalTimeDoneInDay.current}
+                />
+            </div>
 
             <Quotes quote={quote} isOpen={isHideQuotes} />
 
@@ -222,6 +381,7 @@ function Pomodoro() {
                 setIsActive={setIsActive}
                 setIsOpenTimerModal={setIsOpenTimerModal}
                 handleStartFocusTimerClick={handleStartFocusTimerClick}
+                handleStopFocusTimer={handleStopFocusTimer}
             />
         </div>
     );

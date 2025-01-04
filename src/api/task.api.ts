@@ -1,11 +1,12 @@
 import { api } from "./api";
+import { BaseResponse, Task, TaskPagination } from "./Response";
 
 const getTasks = async (params?: {
     status?: string;
     startDate?: string;
     endDate?: string;
-}) => {
-    return api.get("/task", params ? { params } : undefined);
+}): Promise<BaseResponse<TaskPagination<Task>>> => {
+    return (await api.get("/task", params ? { params } : undefined)).data;
 };
 
 const getUnAssignedTasks = async () => {

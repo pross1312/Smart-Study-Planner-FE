@@ -16,6 +16,7 @@ export default {
                 "utility-yellow-50": "#FEFBE8",
                 "c-gray-800": "#282322",
                 "border-secondary": "#E9EAEB",
+                "bg-secondary-400": "#f2eef3",
             },
         },
     },

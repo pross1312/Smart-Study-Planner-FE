@@ -7,7 +7,6 @@ import EventContent from "./EventContent";
 import {
     secondsToHoursMinutes,
     epochSecondsToDayStr,
-    getStartOfDayEpochUTC,
 } from "../../../utils/DateTImeUtils";
 import { getTodos } from "../../../api/todo.api";
 import { Task } from "../../../api/Response";
@@ -49,7 +48,16 @@ export function CustomCalendar() {
         const fetchTodos = async () => {
             try {
                 if (startDate === "" || endDate === "") return;
-                const response = await getTodos({ startDate, endDate });
+
+                const startEpoch = Math.floor(
+                    new Date(startDate).getTime() / 1000
+                );
+                const endEpoch = Math.floor(new Date(endDate).getTime() / 1000);
+
+                const response = await getTodos({
+                    startDate: startEpoch + "",
+                    endDate: endEpoch + "",
+                });
                 const transformedTodos = response.data.data.tasks
                     .filter((task: Task) => task.start_time !== null)
                     .map((task: Task) => ({
@@ -133,24 +141,13 @@ export function CustomCalendar() {
         const { event } = info;
 
         try {
-            const newDate = moment(event.start).format("YYYY-MM-DD");
-
             const task = todos.find((t) => t.id === event.id);
             if (!task) return;
 
-            const time =
-                task?.start_time - getStartOfDayEpochUTC(task?.start_time);
-
-            console.log(task);
-            console.log(getStartOfDayEpochUTC(task?.start_time));
-            console.log("time", time);
-
             await updateTasks(
                 info.event.id,
-                new Date(newDate).getTime() / 1000 + time,
-                new Date(newDate).getTime() / 1000 +
-                    time +
-                    event.extendedProps.estimatedTime
+                new Date(event.start).getTime() / 1000,
+                new Date(event.end).getTime() / 1000
             );
         } catch (error) {
             console.error("Error while dropping event:", error);
@@ -170,9 +167,6 @@ export function CustomCalendar() {
                 newStart.getTime() / 1000,
                 newEnd.getTime() / 1000
             );
-
-            console.log("New start time:", newStart);
-            console.log("New end time:", newEnd);
         } catch (error) {
             console.error("Resize failed:", error);
             info.revert();
@@ -187,7 +181,7 @@ export function CustomCalendar() {
         <div className="flex text-sm p-3 gap-5 h-full max-h-full ">
             <div className="flex-grow mx-auto">
                 <FullCalendar
-                    timeZone="UTC"
+                    timeZone="local"
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"

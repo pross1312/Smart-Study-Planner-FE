@@ -8,6 +8,7 @@ type EndSessionModalProps = {
     setIsOpenTimerModal: (isOpen: boolean) => void;
     handleStartFocusTimerClick: () => void;
     handleStartBreakTimer: () => void;
+    handleStopFocusTimer: () => void;
 };
 
 function EndSessionModal({
@@ -15,6 +16,7 @@ function EndSessionModal({
     setIsEndSession,
     handleStartFocusTimerClick,
     handleStartBreakTimer,
+    handleStopFocusTimer,
 }: EndSessionModalProps) {
     if (!isEndSession) return null;
     return (
@@ -129,7 +131,8 @@ function EndSessionModal({
                                         className="btn-a btn-a-lg btn-a-secondary w-full md:w-auto"
                                         onClick={() => {
                                             setIsEndSession(false);
-                                            handleStartBreakTimer();
+                                            handleStopFocusTimer();
+                                            handleStartFocusTimerClick();
                                         }}
                                     >
                                         Continue studying
@@ -139,7 +142,8 @@ function EndSessionModal({
                                         className="btn-a btn-a-lg btn-a-primary ml-4 w-full md:w-auto"
                                         onClick={() => {
                                             setIsEndSession(false);
-                                            handleStartFocusTimerClick();
+                                            handleStopFocusTimer();
+                                            handleStartBreakTimer();
                                         }}
                                     >
                                         Start break
