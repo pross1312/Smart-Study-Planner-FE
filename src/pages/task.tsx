@@ -50,6 +50,7 @@ const TaskList = () => {
     const [statusFilter, setStatusFilter] = useState("");
     const [priorityFilter, setPriorityFilter] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState("");
 
     useEffect(() => {
         if (statusFilter || priorityFilter) {
@@ -67,7 +68,8 @@ const TaskList = () => {
                 statusFilter, 
                 priorityFilter, 
                 auth.getAccessToken() || '', 
-                searchQuery
+                searchQuery,
+                sortBy
             );
             const listTask = response?.data.tasks;
             setTasks(listTask);
@@ -83,7 +85,7 @@ const TaskList = () => {
         setLoading(true);
         fetchTasks();
         setLoading(false);
-    }, [currentPage, tasksPerPage, statusFilter, priorityFilter]);
+    }, [currentPage, tasksPerPage, statusFilter, priorityFilter, sortBy]);
 
     const handleSearch = () => {
         setCurrentPage(1);
@@ -116,7 +118,7 @@ const TaskList = () => {
     };
 
     return (
-        <div className="container m-0 d-flex" style={{padding: '0px 0px 0 41px ', height: '92%', flexDirection: 'column', justifyContent: 'space-between'}}>
+        <div className="container fix-scroll m-0 d-flex" style={{padding: '0px 0px 0 41px ', height: '92%', flexDirection: 'column', justifyContent: 'space-between'}}>
             <div>
                 <div className="header-title">Task List 🔥</div>
                 <div className="header-container">
@@ -172,6 +174,20 @@ const TaskList = () => {
                                 <option value="LOW">Low</option>
                                 <option value="MEDIUM">Medium</option>
                                 <option value="HIGH">High</option>
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group className="form-group" controlId="sortByFilter">
+                            <Form.Control
+                                as="select"
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                style={{ fontSize: '14px' }}
+                            >
+                                <option value="" disabled hidden>Sort By ↓</option>
+                                <option value="">All</option>
+                                <option value="name">Name</option>
+                                <option value="start_time">Start Time</option>
+                                <option value="end_time">End Time</option>
                             </Form.Control>
                         </Form.Group>
                         <CreateTaskModal className="create-task-modal" addTaskToList={addTaskToList} />
@@ -230,7 +246,7 @@ const TaskList = () => {
                                     />
                                 </div>
                             ))}
-                    </ListGroup>
+                        </ListGroup>
                 )}
             </div>
             <div className="mt-4">

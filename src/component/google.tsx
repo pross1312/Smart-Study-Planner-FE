@@ -15,7 +15,7 @@ const GoogleLoginButton: React.FC<GoogleLoginProps> = ({
             <button
                 onClick={handleGoogleLogin}
                 type="submit"
-                className={`bg-[#333333] text-white text-lg py-3 px-5 rounded cursor-pointer w-full mt-16 flex justify-center items-center transition-colors duration-300 ${
+                className={`bg-[#333333] text-white text-lg py-3 px-5 rounded cursor-pointer w-full mt-3 flex justify-center items-center transition-colors duration-300 ${
                     loading ? "bg-gray-300 cursor-not-allowed" : ""
                 }`}
                 disabled={loading}

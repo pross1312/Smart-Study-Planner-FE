@@ -6,8 +6,8 @@ interface Task {
     description: string;
     status: TaskStatus;
     priority: TaskPriority;
-    start_time: number;
-    end_time: number;
+    start_time: number | null;
+    end_time: number | null;
     created_date: number; 
     updated_date: number;
     is_deleted: boolean;
@@ -37,7 +37,7 @@ export enum TaskPriority {
 }
 
 export enum TaskStatus {
-    ToDo = "todo",
+    ToDo = "TODO",
     InProgress = "IN_PROGRESS",
     Done = "DONE",
 }

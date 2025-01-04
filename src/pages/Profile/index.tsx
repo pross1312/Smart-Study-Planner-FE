@@ -45,7 +45,7 @@ const UserProfile: React.FC = () => {
                     avatar: image == null ? null : image,
                 });
                 if (response.status === 200) {
-                    toast.done(response?.data);
+                    toast.success(response?.data);
                 }
                 if (image) {
                     setProfile({
