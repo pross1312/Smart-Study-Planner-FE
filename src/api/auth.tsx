@@ -21,9 +21,8 @@ class auth {
       }
       return result;
     } catch (error) {
-      alert(error);
+      throw error;
     }
-    return null;
   }
 
   static async login(data: { email: string; password: string }): Promise<ResponseFormat | null> {
@@ -57,6 +56,25 @@ class auth {
 
   static logout() {
     localStorage.removeItem(TOKEN);
+  }
+
+  static async verifyEmail(data: { email: string; otp: number }): Promise<ResponseFormat | null> {
+    try {
+      const response = await fetch(`${this.HOST}/auth/register/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const result = new ResponseFormat(await response.json());
+      if (!result.success) {
+        throw new Error(result.data);
+      }
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 
