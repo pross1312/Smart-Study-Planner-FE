@@ -1,9 +1,12 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTasks, faHome, faUser, faCalendar, faPen } from '@fortawesome/free-solid-svg-icons';
-import './css/SidebarComponent.css'
-import logo from '../assets/logo.png';
-import { PATH } from '../router/path';
-import { Link } from 'react-router-dom';
+import "./css/SidebarComponent.css";
+import logo from "../assets/logo.png";
+import { PATH } from "../router/path";
+import { Link } from "react-router-dom";
+import Home from "@/assets/images/home.svg";
+import Calendar from "@/assets/images/calendar.svg";
+import Goal from "@/assets/images/goal.svg";
+import User from "@/assets/images/user.svg";
+import Plus from "@/assets/images/plus.svg";
 
 interface SidebarProps {
     onMenuClick: (label: string) => void;
@@ -12,11 +15,35 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ onMenuClick, activeComponent }) => {
     const menuItems = [
-        { id: 0, icon: <FontAwesomeIcon icon={faHome} size="lg" color='white'/>, label: 'Home', link: PATH.HOME, title: 'Home' },
-        { id: 1, icon: <FontAwesomeIcon icon={faTasks} size="lg" color='white' />, label: 'TaskList', link: PATH.TASKS, title: 'Task List' },
-        { id: 2, icon: <FontAwesomeIcon icon={faCalendar} size="lg" color='white'/>, label: 'Calendar', link: PATH.CALENDAR, title: 'Calendar' },
-        { id: 4, icon: <FontAwesomeIcon icon={faUser} size="lg" color='white'/>, label: 'Profile', link: PATH.PROFILE, title: 'Profile' },
-        { id: 5, icon: <FontAwesomeIcon icon={faPen} size="lg" color='white'/>, label: 'Focus', link: PATH.POMODORO, title: 'Focus' },
+        { id: 0, icon: Home, label: "Home", link: PATH.HOME, title: "Home" },
+        {
+            id: 1,
+            icon: Plus,
+            label: "TaskList",
+            link: PATH.TASKS,
+            title: "Task List",
+        },
+        {
+            id: 2,
+            icon: Calendar,
+            label: "Calendar",
+            link: PATH.CALENDAR,
+            title: "Calendar",
+        },
+        {
+            id: 5,
+            icon: Goal,
+            label: "Focus",
+            link: PATH.POMODORO,
+            title: "Focus",
+        },
+        {
+            id: 4,
+            icon: User,
+            label: "Profile",
+            link: PATH.PROFILE,
+            title: "Profile",
+        },
     ];
 
     return (
@@ -27,13 +54,21 @@ const Sidebar: React.FC<SidebarProps> = ({ onMenuClick, activeComponent }) => {
             <ul className="sidebar-menu flex flex-col gap-3">
                 {menuItems.map((item) => (
                     <Link
-                        to={item.link ? item.link : '#'}
+                        to={item.link ? item.link : "#"}
                         key={item.id}
-                        className={activeComponent === item.label ? 'box-icon active' : 'box-icon'}
+                        className={
+                            activeComponent === item.label
+                                ? "box-icon active"
+                                : "box-icon"
+                        }
                         onClick={() => onMenuClick(item.label)}
                     >
-                        <span>{item.icon}</span>
-                        <span className='text-white'>{item.title}</span>
+                        {typeof item.icon === "string" ? (
+                            <img src={item.icon} alt="" />
+                        ) : (
+                            item.icon
+                        )}
+                        <span className="text-gray-300 sideBar__title">{item.title}</span>
                     </Link>
                 ))}
             </ul>
