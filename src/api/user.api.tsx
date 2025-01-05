@@ -55,4 +55,10 @@ const getLeaderboard = async (
     ).data;
 };
 
-export { updateUser, getProfile, getLeaderboard };
+const sendResetPasswordEmail = async (email: string): Promise<BaseResponse<string>> => {
+    return (
+        await api.get(encodeURI(`/auth/password/reset/${email}`))
+    );
+}
+
+export { updateUser, getProfile, getLeaderboard, sendResetPasswordEmail };
