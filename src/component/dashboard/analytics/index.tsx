@@ -56,7 +56,7 @@ const Analytics = () => {
   return (
     <Paper sx={{ px: 0, height: 410 }}>
       <Stack mt={-0.5} px={3.75} alignItems="center" justifyContent="space-between">
-        <Typography style={{fontSize: '18px', fontWeight: '600', marginBottom: '30px', marginTop: '10px'}} color="text.secondary" zIndex={1000}>
+        <Typography style={{fontSize: '18px', fontWeight: '600', marginBottom: '30px', marginTop: '10px'}} color="text.secondary">
           Analytics
         </Typography>
       </Stack>

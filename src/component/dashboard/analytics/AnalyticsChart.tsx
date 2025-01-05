@@ -115,7 +115,7 @@ const AnalyticsChart = ({ data, ...rest }: AnalyticsChartProps) => {
           left: 'center',
           top: 'center',
           style: {
-            text: Math.floor(qTaskWithoutExpired / qTaskExpired * 100)  + '%',
+            text: qTaskExpired === 0 ? 0 : Math.floor(qTaskWithoutExpired / qTaskExpired * 100) + '%',
             fontWeight: 600,
             textAlign: 'center',
             fontSize: theme.typography.h2.fontSize,
