@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext } from "react";
 import { TOKEN } from "../constants/Common";
+import { clearAccountFromLocalStorage } from "./AccountStore";
 interface IAuthContext {
   getAccessToken: () => string | null;
   isAuthenticated: () => boolean;
@@ -30,6 +31,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = () => {
     localStorage.removeItem(TOKEN);
+    clearAccountFromLocalStorage();
   };
 
   const isAuthenticated = () => {

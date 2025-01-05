@@ -38,6 +38,10 @@ const router = createBrowserRouter([
         Component: PrivateRoute,
         children: [
             {
+                path: "",
+                Component: Home,
+            },
+            {
                 path: PATH.HOME,
                 Component: Home,
             },
@@ -54,16 +58,18 @@ const router = createBrowserRouter([
                 Component: Pomodoro,
             },
             {
-                path: PATH.IFEATUREPAGE,
-                Component: IFeaturePage,
-            },
-            {
                 path: PATH.PROFILE,
                 Component: UserInfo,
+                children: [
+                    {
+                        path: ":userId",
+                        Component: UserInfo,
+                    },
+                ],
             },
             {
-                path: "/",
-                Component: Home,
+                path: PATH.IFEATUREPAGE,
+                Component: IFeaturePage,
             },
         ],
     },
