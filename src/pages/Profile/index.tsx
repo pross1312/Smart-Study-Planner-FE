@@ -333,6 +333,7 @@ const PerformanceChart: React.FC<EChartComponentProps> = ({
     const chartOptions = useRef<echarts.EChartsOption>({});
 
     useEffect(() => {
+        console.log(history);
         if (!history || history.length === 0) return;
 
         const xAxisData = new Map<string, number>();
@@ -367,9 +368,7 @@ const PerformanceChart: React.FC<EChartComponentProps> = ({
             type: "value",
             name: "Minutes",
         };
-    }, [history]);
 
-    useEffect(() => {
         if (!chartRef.current) return;
 
         const chartInstance = echarts.init(chartRef.current);
@@ -383,7 +382,7 @@ const PerformanceChart: React.FC<EChartComponentProps> = ({
             chartInstance.dispose();
             window.removeEventListener("resize", resizeHandler);
         };
-    }, [chartOptions.current]);
+    }, [history]);
 
     return <div ref={chartRef} style={{ width, height }} />;
 };
@@ -407,6 +406,13 @@ function StatisticItem({ icon, title, value }: any) {
 }
 
 function LeaderBoard({ leaderBoard }: { leaderBoard: LeaderboardEntry[] }) {
+    const buildTotalTime = (second: number) => {
+        const hours = Math.floor(second / 3600);
+        const minutes = Math.floor((second % 3600) / 60);
+
+        if (hours === 0) return `${minutes}m`;
+        return `${hours}h ${minutes}m`;
+    };
     return (
         <table className="w-full">
             <tbody>
@@ -425,8 +431,7 @@ function LeaderBoard({ leaderBoard }: { leaderBoard: LeaderboardEntry[] }) {
                         </td>
                         <td className="font-semibold p-4">{entry.name}</td>
                         <td className="hidden md:flex p-4">
-                            {Math.floor(entry.time_span / 60) + "h "}
-                            {(entry.time_span % 60) + "m"}
+                            {buildTotalTime(entry.time_span)}
                         </td>
                     </tr>
                 ))}

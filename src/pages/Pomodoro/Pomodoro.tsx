@@ -69,7 +69,9 @@ function Pomodoro() {
     const [isActive, setIsActive] = useState(false);
     const [buttonText, setButtonText] = useState("START");
     const [isEndSession, setIsEndSession] = useState(false);
-    const [volume, setVolume] = useState(1);
+    // const [volume, setVolume] = useState(1);
+    // const [tasks, setTasks] = useState<Task[]>([]);
+
     const [isOpenSettingModal, setIsOpenSettingModal] = useState<ModalType>(
         ModalType.CLOSED
     );
@@ -82,7 +84,6 @@ function Pomodoro() {
     const [searchParams] = useSearchParams();
     const taskId = Number.parseInt(searchParams.get("taskId") || "0");
 
-    const [tasks, setTasks] = useState<Task[]>([]);
     const [currentTask, setCurrentTask] = useState<Task | undefined>(undefined);
 
     const totalTaskInDay = useRef(0);
@@ -115,7 +116,7 @@ function Pomodoro() {
                 console.log(taskId);
                 if (!taskId) return;
                 const response = await getTasks();
-                setTasks(response.data.tasks);
+                // setTasks(response.data.tasks);
                 const currentTask = response.data.tasks.find(
                     (task) => task.id == taskId
                 );
@@ -169,7 +170,7 @@ function Pomodoro() {
                 ).length;
 
                 const now = Math.floor(Date.now() / 1000);
-                const timeDifference = currentTask.end_time - now;
+                const timeDifference = currentTask.end_time || 0 - now;
 
                 if (timeDifference > 0) {
                     console.log("timeDifference " + timeDifference);
@@ -189,12 +190,12 @@ function Pomodoro() {
 
     const [play] = useSound(startSfx, {
         interrupt: true,
-        volume: volume,
+        volume: 1,
     });
 
     const [pause] = useSound(pauseSfx, {
         interrupt: true,
-        volume: volume,
+        volume: 1,
     });
 
     const handleShuffleQuotes = () => {
@@ -356,7 +357,7 @@ function Pomodoro() {
                     shortLength={shortLength}
                     secondsLeft={secondsLeft}
                     setSecondsLeft={setSecondsLeft}
-                    volume={volume}
+                    volume={1}
                     handleStartFocusTimerClick={handleStartFocusTimerClick}
                     handleStopFocusTimer={handleStopFocusTimer}
                     handlePauseFocusTimer={handlePauseFocusTimer}

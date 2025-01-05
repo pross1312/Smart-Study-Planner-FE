@@ -47,6 +47,11 @@ export interface TaskPagination<T> {
     total: { count: string };
 }
 
+export type Quote ={
+    quote: string;
+    author: string;
+}
+
 // Define the specific response type for your example
 type TodoResponse = BaseResponse<Todo[]>;
 type TaskResponse = BaseResponse<Task[]>;

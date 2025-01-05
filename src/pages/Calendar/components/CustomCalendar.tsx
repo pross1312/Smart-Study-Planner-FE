@@ -13,12 +13,14 @@ import { Task } from "../../../api/Response";
 import { getUnAssignedTasks, updateTasks } from "../../../api/task.api";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { EventInput } from "@fullcalendar/core/index.js";
 
 export function CustomCalendar() {
     const calendarRef = createRef<FullCalendar>();
 
     const [todos, setTodos] = useState([] as Task[]);
     const [tasks, setTasks] = useState([] as Task[]);
+    const [events, setEvents] = useState([] as EventInput[]);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
 
@@ -58,9 +60,17 @@ export function CustomCalendar() {
                     startDate: startEpoch + "",
                     endDate: endEpoch + "",
                 });
+
                 const transformedTodos = response.data.data.tasks
-                    .filter((task: Task) => task.start_time !== null)
-                    .map((task: Task) => ({
+                    .filter(
+                        (
+                            task: Task
+                        ): task is Task & {
+                            start_time: number;
+                            end_time: number;
+                        } => task.start_time !== null && task.end_time !== null
+                    )
+                    .map((task : any) => ({
                         id: task.id.toString(),
                         name: task.name,
                         estimatedTime: task.end_time - task.start_time,
@@ -70,7 +80,10 @@ export function CustomCalendar() {
                         start_time: task.start_time,
                         end_time: task.end_time,
                     }));
+                setEvents(transformedTodos);
                 setTodos(transformedTodos);
+
+                console.log(transformedTodos);
             } catch (error) {
                 console.error("Failed to fetch todos:", error);
             }
@@ -190,7 +203,7 @@ export function CustomCalendar() {
                         center: "title",
                         right: "dayGridMonth,timeGridWeek,timeGridDay",
                     }}
-                    events={todos}
+                    events={events}
                     editable={true}
                     eventResizableFromStart={true}
                     selectable={true}
@@ -226,7 +239,9 @@ export function CustomCalendar() {
                         key={index}
                         className="draggable-task p-2 rounded cursor-pointer"
                         data-name={task.name}
-                        data-estimated-time={task?.start_time - task?.end_time}
+                        data-estimated-time={
+                            (task?.start_time || 0) - (task?.end_time || 0)
+                        }
                         data-priority={task.priority}
                         data-id={task.id}
                     >

@@ -8,7 +8,7 @@ import { deleteTaskFetch, updateTaskFetch } from "../api/task";
 import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { Task, TaskStatus } from "../api/Response";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 interface UpdateTaskModalProps {
     task: Task;

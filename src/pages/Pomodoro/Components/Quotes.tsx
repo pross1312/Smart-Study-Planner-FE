@@ -1,4 +1,6 @@
-function Quotes({ quote, isOpen = true }: { quote: Object; isOpen?: boolean }) {
+import { Quote } from "../../../api/Response";
+
+function Quotes({ quote, isOpen = true }: { quote: Quote; isOpen?: boolean }) {
     if (!isOpen) return null;
     return (
         <div

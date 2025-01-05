@@ -18,13 +18,13 @@ interface Task {
     end_time: string;
 }
 
-function convertTime(timestamp: string): string {
-    const date = new Date(timestamp);
-    const hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes();
-    const totalSeconds = (hours * 3600) + (minutes * 60);
-    return totalSeconds.toString();
-}
+// function convertTime(timestamp: string): string {
+//     const date = new Date(timestamp);
+//     const hours = date.getUTCHours();
+//     const minutes = date.getUTCMinutes();
+//     const totalSeconds = (hours * 3600) + (minutes * 60);
+//     return totalSeconds.toString();
+// }
 
 function convertToSeconds(dateString: string): number {
     const date = new Date(dateString);
@@ -34,9 +34,10 @@ function convertToSeconds(dateString: string): number {
 
 interface CreateTaskModalProps {
     addTaskToList: (newTask: Task) => void;
+    className?: string;
 }
 
-const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
+const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList, className }) => {
     const auth = useAuth();
     const [show, setShow] = useState<boolean>(false);
     const [task, setTask] = useState<Task>({
@@ -103,6 +104,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList }) => {
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                className={className}
             >
                 <FontAwesomeIcon size="xl" icon={faPlus} />
             </div>

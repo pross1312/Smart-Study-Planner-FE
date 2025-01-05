@@ -9,7 +9,7 @@ interface VolumnInputProps {
     soundUrl: string;
 }
 
-const VolumnInput: React.FC<VolumnInputProps> = ({ icon, title, soundUrl }) => {
+function VolumnInput ({ icon, title, soundUrl } : VolumnInputProps) {
     const [volume, setVolume] = useState(0);
     const [play, { sound }] = useSound(soundUrl, {
         volume,

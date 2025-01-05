@@ -1,5 +1,3 @@
-import VolumnInput from "../Components/VolumnInput";
-
 function BackgroundModal() {
     return (
         <div

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTasks, faHome, faCog, faUser, faCalendar, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faTasks, faHome, faUser, faCalendar, faPen } from '@fortawesome/free-solid-svg-icons';
 import './css/SidebarComponent.css'
 import logo from '../assets/logo.png';
 import { PATH } from '../router/path';

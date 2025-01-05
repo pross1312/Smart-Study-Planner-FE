@@ -1,5 +1,3 @@
-import React, { useState, useEffect } from "react";
-
 function VideoPlayer() {
     return (
         <div className="absolute w-full h-0 pb-[56.25%] ">
