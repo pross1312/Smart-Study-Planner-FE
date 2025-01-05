@@ -10,4 +10,5 @@ export default defineConfig({
     define: {
         global: "window",
     },
+    assetsInclude: ["**/*.mp3"],
 });

@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import AnalyticsChart from './AnalyticsChart';
 import { analyticTaskFetch } from "../../../api/task";
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 interface AnalyticsItem {
   id: number;
@@ -19,7 +20,7 @@ const Analytics = () => {
       try {
         const response = await analyticTaskFetch();
 
-        const statusMap = {
+        const statusMap: { [key: string]: string } = {
           'Todo': 'TODO',
           'In Progress': 'IN PROGRESS',
           'Done': 'DONE',
@@ -45,7 +46,7 @@ const Analytics = () => {
         setAnalyticsData(result)
 
       } catch (error) {
-        console.error('Failed to fetch data:', error);
+        toast.error('Failed to fetch data: ' + error);
       }
     };
 

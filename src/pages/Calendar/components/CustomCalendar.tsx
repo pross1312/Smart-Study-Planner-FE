@@ -7,19 +7,20 @@ import EventContent from "./EventContent";
 import {
     secondsToHoursMinutes,
     epochSecondsToDayStr,
-    getStartOfDayEpochUTC,
 } from "../../../utils/DateTImeUtils";
 import { getTodos } from "../../../api/todo.api";
 import { Task } from "../../../api/Response";
 import { getUnAssignedTasks, updateTasks } from "../../../api/task.api";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { EventInput } from "@fullcalendar/core/index.js";
 
 export function CustomCalendar() {
     const calendarRef = createRef<FullCalendar>();
 
     const [todos, setTodos] = useState([] as Task[]);
     const [tasks, setTasks] = useState([] as Task[]);
+    const [events, setEvents] = useState([] as EventInput[]);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
 
@@ -49,10 +50,27 @@ export function CustomCalendar() {
         const fetchTodos = async () => {
             try {
                 if (startDate === "" || endDate === "") return;
-                const response = await getTodos({ startDate, endDate });
+
+                const startEpoch = Math.floor(
+                    new Date(startDate).getTime() / 1000
+                );
+                const endEpoch = Math.floor(new Date(endDate).getTime() / 1000);
+
+                const response = await getTodos({
+                    startDate: startEpoch + "",
+                    endDate: endEpoch + "",
+                });
+
                 const transformedTodos = response.data.data.tasks
-                    .filter((task: Task) => task.start_time !== null)
-                    .map((task: Task) => ({
+                    .filter(
+                        (
+                            task: Task
+                        ): task is Task & {
+                            start_time: number;
+                            end_time: number;
+                        } => task.start_time !== null && task.end_time !== null
+                    )
+                    .map((task : any) => ({
                         id: task.id.toString(),
                         name: task.name,
                         estimatedTime: task.end_time - task.start_time,
@@ -62,7 +80,10 @@ export function CustomCalendar() {
                         start_time: task.start_time,
                         end_time: task.end_time,
                     }));
+                setEvents(transformedTodos);
                 setTodos(transformedTodos);
+
+                console.log(transformedTodos);
             } catch (error) {
                 console.error("Failed to fetch todos:", error);
             }
@@ -133,24 +154,13 @@ export function CustomCalendar() {
         const { event } = info;
 
         try {
-            const newDate = moment(event.start).format("YYYY-MM-DD");
-
             const task = todos.find((t) => t.id === event.id);
             if (!task) return;
 
-            const time =
-                task?.start_time - getStartOfDayEpochUTC(task?.start_time);
-
-            console.log(task);
-            console.log(getStartOfDayEpochUTC(task?.start_time));
-            console.log("time", time);
-
             await updateTasks(
                 info.event.id,
-                new Date(newDate).getTime() / 1000 + time,
-                new Date(newDate).getTime() / 1000 +
-                    time +
-                    event.extendedProps.estimatedTime
+                new Date(event.start).getTime() / 1000,
+                new Date(event.end).getTime() / 1000
             );
         } catch (error) {
             console.error("Error while dropping event:", error);
@@ -170,9 +180,6 @@ export function CustomCalendar() {
                 newStart.getTime() / 1000,
                 newEnd.getTime() / 1000
             );
-
-            console.log("New start time:", newStart);
-            console.log("New end time:", newEnd);
         } catch (error) {
             console.error("Resize failed:", error);
             info.revert();
@@ -187,7 +194,7 @@ export function CustomCalendar() {
         <div className="flex text-sm p-3 gap-5 h-full max-h-full ">
             <div className="flex-grow mx-auto">
                 <FullCalendar
-                    timeZone="UTC"
+                    timeZone="local"
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
@@ -196,7 +203,7 @@ export function CustomCalendar() {
                         center: "title",
                         right: "dayGridMonth,timeGridWeek,timeGridDay",
                     }}
-                    events={todos}
+                    events={events}
                     editable={true}
                     eventResizableFromStart={true}
                     selectable={true}
@@ -232,7 +239,9 @@ export function CustomCalendar() {
                         key={index}
                         className="draggable-task p-2 rounded cursor-pointer"
                         data-name={task.name}
-                        data-estimated-time={task?.start_time - task?.end_time}
+                        data-estimated-time={
+                            (task?.start_time || 0) - (task?.end_time || 0)
+                        }
                         data-priority={task.priority}
                         data-id={task.id}
                     >

@@ -1,10 +1,25 @@
 import { api } from "./api";
+import { BaseResponse } from "./Response";
 
 export type updateUserRequest = {
     avatar: File | null;
     name: string;
     email: string;
 };
+
+export type Profile = {
+    id: number;
+    name: string;
+    email: string;
+    avatar: string;
+};
+
+export interface LeaderboardEntry {
+    email: string;
+    name: string;
+    time_span: number; // minutes
+    avatar: string;
+}
 
 const updateUser = async (body: updateUserRequest) => {
     const formData = new FormData();
@@ -22,9 +37,28 @@ const updateUser = async (body: updateUserRequest) => {
     });
 };
 
-
-const getProfile = async () => {
-    return api.get("/user");
+const getProfile = async (): Promise<BaseResponse<Profile>> => {
+    return (await api.get("/user")).data;
 };
 
-export { updateUser, getProfile };
+const getLeaderboard = async (
+    page: number,
+    page_size: number
+): Promise<BaseResponse<Array<LeaderboardEntry>>> => {
+    return (
+        await api.get("/user/leaderboard", {
+            params: {
+                page,
+                page_size,
+            },
+        })
+    ).data;
+};
+
+const sendResetPasswordEmail = async (email: string): Promise<BaseResponse<string>> => {
+    return (
+        await api.get(encodeURI(`/auth/password/reset/${email}`))
+    );
+}
+
+export { updateUser, getProfile, getLeaderboard, sendResetPasswordEmail };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Paper, Stack, Typography, Button } from '@mui/material';
 import ReportsChart from './ReportsChart'; 
 import dayjs from 'dayjs';
@@ -20,7 +20,7 @@ const ReportsChartContainer = () => {
         const startOfWeek = dayjs().add(weekOffset, 'week').startOf('week').add(2, 'days');
         const endOfWeek = startOfWeek.add(6, 'days');
         const response = await reportTaskFetch(startOfWeek.unix(), endOfWeek.unix());
-        const data = response.data.map(res => {
+        const data = response.data.map((res : any) => {
           return res.record_count;
         })
         setData(data); 

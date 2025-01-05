@@ -1,11 +1,21 @@
-function TaskItem() {
+import { Task } from "../../../api/Response";
+import {
+    formatTimeFromEpoch,
+    formatDayFromEpoch,
+} from "../../../utils/DateTImeUtils";
+
+function TaskItem({ task }: { task?: Task }) {
     return (
         <div className="flex space-x-2 w-full px-3 py-2 items-center rounded-lg bg-gray-600 bg-opacity-40">
             <div className="flex justify-center w-5 h-5 border-2 border-solid rounded-full cursor-pointer border-white bg-transparent"></div>
             <div className="break-word w-[calc(100%-36px)] flex-1 text-xs">
-                Integrate with Google Calendar
+                {task?.name}
             </div>
-            <p className="text-xs">16:00 - 17:00</p>
+            <p className="text-xs">
+                {formatDayFromEpoch(task?.start_time || 0) + "  "}
+                {formatTimeFromEpoch(task?.start_time || 0)} -
+                {formatTimeFromEpoch(task?.end_time || 0)}
+            </p>
 
             <div className="flex items-center">
                 <button type="button">
@@ -22,7 +32,17 @@ function TaskItem() {
         </div>
     );
 }
-function SessionGoalModal() {
+
+type SessionGoalModalProps = {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+    task?: Task;
+    totalTaskInDay?: number;
+    completedTaskInDay?: number;
+};
+
+function SessionGoalModal({ isOpen, setIsOpen, task, totalTaskInDay, completedTaskInDay }: SessionGoalModalProps) {
+    if (!isOpen) return null;
     return (
         <div className="flex justify-between w-full bg-black bg-opacity-50">
             <div className="fixed flex items-center justify-center ">
@@ -57,30 +77,10 @@ function SessionGoalModal() {
                             <b className="ml-1 font-bold">Task Manager</b>
                         </div>
                         <div className="flex">
-                            <div>
-                                <svg
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="ml-2 h-4 w-4"
-                                >
-                                    <g fill="none" fill-rule="evenodd">
-                                        <path
-                                            d="M12 11a1 1 0 01.993.883L13 12v3a1 1 0 01-1.993.117L11 15v-3a1 1 0 011-1zm0-3a1 1 0 110 2 1 1 0 010-2z"
-                                            fill="#FF6F61"
-                                        ></path>
-                                        <path
-                                            d="M12 3a9 9 0 018.19 12.738 1 1 0 11-1.82-.832 7 7 0 10-2.408 2.865 1 1 0 111.134 1.648A9 9 0 1112 3z"
-                                            fill="#9656A1"
-                                            fill-rule="nonzero"
-                                        ></path>
-                                    </g>
-                                </svg>
-                            </div>
                             <button
                                 className="ml-3 cursor-pointer"
                                 title="Minimize"
+                                onClick={() => setIsOpen(false)}
                             >
                                 <svg
                                     width="24"
@@ -101,9 +101,27 @@ function SessionGoalModal() {
                         </div>
                     </div>
 
+                    <div className="mt-4 flex h-[80px] items-center justify-center space-x-2 rounded-xl bg-gray-600 bg-opacity-40 px-5 py-[17px]">
+                        <div className="h-full flex-1 basis-6/12 self-end">
+                            <div className="flex h-full flex-col justify-between whitespace-nowrap text-xs">
+                                <div className="text-[40px] leading-7 font-black text-white">
+                                    {totalTaskInDay}
+                                </div>
+                                <div className="mt-[6px]">Open</div>
+                            </div>
+                        </div>
+                        <div className="h-full flex-1 basis-6/12 self-end border-l-2 border-solid border-white/30 pl-5">
+                            <div className="flex h-full flex-col justify-between whitespace-nowrap text-xs">
+                                <span className="text-[40px] leading-7 font-black text-[#78a053]">
+                                    {completedTaskInDay}
+                                </span>
+                                <div className="mt-[6px]">Completed</div>
+                            </div>
+                        </div>
+                    </div>
                     <div>
                         <div className="overflow-y-overlay mt-[6px] max-h-[300px] space-y-2.5 pt-2.5">
-                            <TaskItem />
+                            <TaskItem task={task} />
                         </div>
                     </div>
                 </div>

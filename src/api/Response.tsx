@@ -18,7 +18,7 @@ interface Todo {
     id: number;
     user_id: number;
     task_id: string;
-    start_date: number; 
+    start_date: number;
     end_date: number;
     task: Task;
 }
@@ -40,6 +40,16 @@ export enum TaskStatus {
     ToDo = "TODO",
     InProgress = "IN_PROGRESS",
     Done = "DONE",
+}
+
+export interface TaskPagination<T> {
+    tasks: T[];
+    total: { count: string };
+}
+
+export type Quote ={
+    quote: string;
+    author: string;
 }
 
 // Define the specific response type for your example

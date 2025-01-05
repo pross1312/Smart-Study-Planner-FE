@@ -1,3 +1,5 @@
+import moment from "moment";
+
 function epochMillsToDayStr(epochMils: number): string {
     const date = new Date(+epochMils);
     const dayStr = date.toISOString().split("T")[0];
@@ -5,9 +7,22 @@ function epochMillsToDayStr(epochMils: number): string {
 }
 
 function epochSecondsToDayStr(epochSeconds: number): string {
+    return moment.unix(epochSeconds).format('YYYY-MM-DDTHH:mm:ss');
+}
+
+function formatTimeFromEpoch(epochSeconds: number) {
     const date = new Date(epochSeconds * 1000);
-    const formattedDate = date.toISOString().slice(0, 19);
-    return formattedDate;
+
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+}
+
+function formatDayFromEpoch(epochSeconds: number) {
+    const date = new Date(epochSeconds * 1000);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    return `${day}/${month}`;
 }
 
 // 7200s => 2h 0m
@@ -15,18 +30,6 @@ function secondsToHoursMinutes(seconds: number): string {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     return `${hours}h ${minutes}m`;
-}
-
-function getStartOfDayEpochUTC(epochSeconds: number): number {
-    const date = new Date(epochSeconds * 1000);
-    const startOfDayUTC = Date.UTC(
-        date.getUTCFullYear(),
-        date.getUTCMonth(),
-        date.getUTCDate()
-    );
-
-    console.log("startOfDayUTC:", new Date(startOfDayUTC).toISOString());
-    return Math.floor(startOfDayUTC / 1000);
 }
 
 function convertToEpochSeconds(datetimeStr: string) {
@@ -42,7 +45,8 @@ function convertToEpochSeconds(datetimeStr: string) {
 export {
     epochMillsToDayStr,
     secondsToHoursMinutes,
+    formatDayFromEpoch,
     epochSecondsToDayStr,
-    getStartOfDayEpochUTC,
     convertToEpochSeconds,
+    formatTimeFromEpoch,
 };

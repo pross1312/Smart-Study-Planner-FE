@@ -1,7 +1,7 @@
 import { api } from "./api";
 
 export type createChatRequest = {
-    message: string;
+    prompt: string;
 };
 
 const createChat = async (body: createChatRequest) => {

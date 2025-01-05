@@ -46,7 +46,7 @@ function ChatBotComponent() {
 
   const callAPI = async () => {
       try{
-        const response = await createChat({message: input});
+        const response = await createChat({prompt: input});
         return response.data.data;
       }
       catch(err){

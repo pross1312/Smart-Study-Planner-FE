@@ -55,9 +55,9 @@ const LoginForm: React.FC = () => {
             {authContext.isAuthenticated() ? (
                 <Navigate to="/home" replace />
             ) : (
-                <div className="w-screen h-screen max-h-[1200px] flex items-center justify-center">
-                    <div className="flex w-full h-4/6 rounded-0 sm:min-h-auto sm:w-auto sm:rounded-2xl sm:shadow md:w-full md:max-w-6xl">
-                        <div className="w-full h-full p-20 overflow-auto">
+                <div className="w-screen h-screen max-h-screen overflow-hidden flex items-center justify-center">
+                    <div className="flex w-full rounded-0 sm:min-h-auto sm:w-auto sm:rounded-2xl sm:shadow md:w-full md:max-w-6xl">
+                        <div className="w-full p-8">
                             <p className="text-4xl font-extrabold leading-tight tracking-tight whitespace-nowrap mb-4">
                                 Sign in
                             </p>

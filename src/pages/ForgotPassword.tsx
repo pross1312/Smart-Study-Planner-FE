@@ -6,6 +6,7 @@ import Paper from "@mui/material/Paper";
 import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { sendResetPasswordEmail } from "../api/user.api";
 
 const schema = z.object({
     email: z
@@ -27,8 +28,13 @@ function ForgotPassword() {
 
     const { isValid, dirtyFields, errors } = formState;
 
-    function onSubmit() {
-        reset(defaultValues);
+    async function onSubmit(data: {email: string}) {
+        try {
+            await sendResetPasswordEmail(data.email);
+            reset(defaultValues);
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     return (

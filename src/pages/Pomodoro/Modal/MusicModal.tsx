@@ -25,7 +25,7 @@ function MusicModal({ isOpenModal, setIsOpenModal }: MusicModalProps) {
                 </button>
             </div>
             <div className="w-full flex flex-col gap-2">
-                <VolumnInput title="Original video sound" icon={""} />
+                <VolumnInput title="Original video sound" icon={""} soundUrl="" />
                 <VolumnInput
                     icon={"🌠"}
                     title="LoFi beats"
