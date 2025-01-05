@@ -38,6 +38,10 @@ const router = createBrowserRouter([
         Component: PrivateRoute,
         children: [
             {
+                path: "",
+                Component: Home,
+            },
+            {
                 path: PATH.HOME,
                 Component: Home,
             },
@@ -60,8 +64,8 @@ const router = createBrowserRouter([
                     {
                         path: ":userId",
                         Component: UserInfo,
-                    }
-                ]
+                    },
+                ],
             },
             {
                 path: PATH.IFEATUREPAGE,
