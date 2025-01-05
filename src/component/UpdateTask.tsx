@@ -16,6 +16,20 @@ interface UpdateTaskModalProps {
     onDelete: (taskId: number) => void;
 }
 
+function parseDate(timestamp: number) {
+    if (typeof timestamp !== 'number' || isNaN(timestamp) || timestamp <= 0) {
+        return null;
+    }
+
+    const date = new Date(timestamp * 1000);
+
+    if (isNaN(date.getTime())) {
+        return null;
+    }
+
+    return date;
+}
+
 const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDelete }) => {
     const auth = useAuth();
     const [show, setShow] = useState<boolean>(false);
@@ -185,7 +199,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                         <Form.Group className="mb-3 d-flex flex-column" controlId="taskStartTime">
                             <Form.Label>Start Time</Form.Label>
                             <DatePicker
-                                selected={updatedTask.start_time ? new Date(updatedTask.start_time * 1000) : null}
+                                selected={updatedTask.start_time ? parseDate(updatedTask.start_time * 1000) : null}
                                 onChange={(date) =>
                                     setUpdatedTask((prev) => ({
                                         ...prev,
@@ -204,7 +218,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                         <Form.Group className="mb-3 d-flex flex-column" controlId="taskEndTime">
                             <Form.Label>End Time</Form.Label>
                             <DatePicker
-                                selected={updatedTask.end_time ? new Date(updatedTask.end_time * 1000) : null}
+                                selected={updatedTask.end_time ? parseDate(updatedTask.end_time * 1000) : null}
                                 onChange={(date) =>
                                     setUpdatedTask((prev) => ({
                                         ...prev,

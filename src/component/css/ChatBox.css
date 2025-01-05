@@ -41,7 +41,6 @@
   transition: all 0.5s ease;
   transform: translateX(200%);
   opacity: 0;
-  z-index: 10000000000;
 }
 
 .active {
@@ -144,6 +143,15 @@
   background-color: rgb(80, 81, 249);
   align-self: flex-start;
   color: white;
+}
+
+.modeltext {
+  background-color: rgb(80, 81, 249);
+  align-self: flex-start;
+  color: white;
+  border-radius: 1rem;
+  margin: 0.3rem;
+  padding: 1rem;
 }
 
 .message-wrapper {

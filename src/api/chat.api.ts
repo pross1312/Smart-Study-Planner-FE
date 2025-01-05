@@ -45,3 +45,21 @@ export const analyzeSchedule = async (): Promise<BaseResponse<string>> => {
         await api.get("/ai/schedule/analytic")
     ).data;
 };
+
+export const changeModel = async (model: string): Promise<BaseResponse<string>> => {
+    return (
+        await api.put("/ai/model", {model})
+    ).data;
+};
+
+export const analyticTask = async (): Promise<BaseResponse<string>> => {
+    return (
+        await api.get("/ai/schedule/analytic")
+    ).data;
+};
+
+export const applySuggestion = async (body: any): Promise<BaseResponse<string>> => {
+    return (
+        await api.post("/ai/suggestion/apply", body)
+    ).data;
+};

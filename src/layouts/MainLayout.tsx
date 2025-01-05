@@ -3,6 +3,7 @@ import Sidebar from "../component/SidebarComponent";
 import { Outlet } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import { useFocus } from "../store/FocusContext";
+import ChatBox from "../component/ChatBox";
 
 export default function () {
     const [activeComponent, setActiveComponent] = useState<string>("Home");
@@ -28,6 +29,7 @@ export default function () {
             <div className="flex-1 h-screen overflow-auto">
                 <Outlet />
             </div>
+            <ChatBox />
         </div>
     );
 }
