@@ -75,7 +75,7 @@ function Pomodoro() {
     const [isOpenSettingModal, setIsOpenSettingModal] = useState<ModalType>(
         ModalType.CLOSED
     );
-    const [secondsLeft, setSecondsLeft] = useState(pomoLength * 1);
+    const [secondsLeft, setSecondsLeft] = useState(pomoLength * 60);
     const [quote, setQuote] = useState(quotes[0]);
     const [isOpenTaskManager, setIsOpenTaskManager] = useState(true);
 
@@ -107,7 +107,7 @@ function Pomodoro() {
     }, []);
 
     useEffect(() => {
-        setSecondsLeft(pomoLength * 1);
+        setSecondsLeft(pomoLength * 60);
     }, [pomoLength]);
 
     useEffect(() => {
