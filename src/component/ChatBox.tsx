@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import chatbox_icon from '../assets/icon.png';
 import send_icon from '../assets/send.png';
 import chatbox from '../assets/chatbot.png';
@@ -7,11 +7,13 @@ import user_image from '../assets/user.jpeg';
 import Avatar from './Avatar';
 import Typing from './Typing';
 import "./css/ChatBox.css"
-import { createChat } from '../api/chat.api';
+import { listModels, createChat, getChatHistory, Role } from '../api/chat.api';
 
 function ChatBotComponent() {
-  const [messages, setMessages] = useState<{ sender: 'user' | 'bot'; text: string }[]>([]);
+  const [messages, setMessages] = useState<Array<{role: Role, content: string}>>([]);
   const [typingMessage, setTypingMessage] = useState<string | null>(null);
+  const [_currentModel, setModel] = useState<string | null>(null);
+  const [_modelList, setModelList] = useState<Array<string>>([]);
   const [input, setInput] = useState<string>('');
   const [isShow, setShow] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -21,10 +23,37 @@ function ChatBotComponent() {
   const toggleScale = () => {
     setIsScaled((prev) => !prev);
   };
+  useEffect(() => {
+    getChatHistory().then(response => {
+      setMessages(response.data.map(x => {return {role: x.role, content: x.content}}));
+    }).catch(err => {
+      console.log(err);
+    });
+
+    listModels().then(response => {
+      console.log(response);
+      const {models, current} = response.data;
+      setModelList(models);
+      setModel(current);
+    }).catch(err => {
+      console.log(err);
+    });
+
+    // analyzeSchedule().then(response => {
+    //   const seperationIndex = response?.data?.indexOf('\r\n\r\n');
+    //   const suggestions = response?.data?.slice(0, seperationIndex)?.split("\r\n");
+    //   for (const suggestion of suggestions) {
+    //     console.log(JSON.parse(suggestion));
+    //   }
+    //   console.log(response?.data?.slice(seperationIndex + 4));
+    // }).catch(err => {
+    //   console.log(err);
+    // });
+  }, []);
 
   const sendMessage = async () => {
     if (input.trim()) {
-      setMessages([...messages, { sender: 'user', text: input }]);
+      setMessages([...messages, { role: Role.Model, content: input }]);
       setInput('');
       setLoading(true);
 
@@ -43,7 +72,7 @@ function ChatBotComponent() {
 
       if (index === text.length) {
         clearInterval(typingInterval);
-        setMessages((prevMessages) => [...prevMessages, { sender: 'bot', text }]);
+        setMessages((prevMessages) => [...prevMessages, { role: Role.Model, content: text }]);
         setTypingMessage(null);
       }
     }, 10);
@@ -121,12 +150,12 @@ function ChatBotComponent() {
           </div>
           <div className='messages'>
             {messages.map((msg, index) => (
-                <div key={index} className={`message-wrapper ${msg.sender}`}>
-                    {msg.sender === 'bot' ? (
+                <div key={index} className={`message-wrapper ${msg.role}`}>
+                    {msg.role === 'model' ? (
                         <>
                             <Avatar width='2.5rem' height='2.5rem' margin='1rem 0 0 0' image={chatbox} />
-                            <pre className={`message ${msg.sender}`}>
-                              {msg.text.split('\n').map((line, index) => (
+                            <pre className={`message ${msg.role}`}>
+                              {msg.content.split('\n').map((line: string, index: number) => (
                                 <div style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap' }} key={index}>
                                   {line}
                                 </div>
@@ -135,8 +164,8 @@ function ChatBotComponent() {
                         </>
                     ) : (
                         <>
-                            <pre className={`message ${msg.sender}`}>
-                              {msg.text.split('\n').map((line, index) => (
+                            <pre className={`message ${msg.role}`}>
+                              {msg.content.split('\n').map((line: string, index: number) => (
                                 <div style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap' }} key={index}>
                                   {line}
                                 </div>

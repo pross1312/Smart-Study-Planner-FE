@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import PublicRoute from "../layouts/PublicRoute";
 import { PATH } from "./path";
 import PrivateRoute from "../layouts/PrivateRoute";
