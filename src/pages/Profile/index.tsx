@@ -11,8 +11,21 @@ import * as echarts from "echarts";
 import { AiOutlineClose } from "react-icons/ai";
 import Loading from "../../component/Loading";
 import { getHistory, History } from "../../api/pomodoro.api";
+import School from "@/assets/images/school.svg";
+import Book from "@/assets/images/book.svg";
+import Flag from "@/assets/images/flag.svg";
+import Average from "@/assets/images/average.svg";
+import Rank from "@/assets/images/rank.svg";
+import User from "@/assets/images/user.svg";
+import Logout from "@/assets/images/logout.svg";
+import { useAuth } from "../../store/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { PATH } from "../../router/path";
 
 const UserProfile: React.FC = () => {
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
     const [profile, setProfile] = useState<Profile>();
     const [leaderBoard, setLeaderBoard] = useState<LeaderboardEntry[]>([]);
     const [history, setHistory] = useState<History[]>([]);
@@ -104,6 +117,11 @@ const UserProfile: React.FC = () => {
         return <p>Loading profile...</p>;
     }
 
+    const handleLogout = () => {
+        logout();
+        navigate(PATH.LOGIN);
+    };
+
     return (
         <>
             <div className="grid gap-5 lg:grid-cols-1 xl:grid-cols-4">
@@ -142,6 +160,19 @@ const UserProfile: React.FC = () => {
                                                 ></path>
                                             </g>
                                         </svg>
+                                    </div>
+                                </button>
+
+                                <button
+                                    onClick={handleLogout}
+                                    className="Modal__button"
+                                    type="button"
+                                >
+                                    <div>
+                                        <img
+                                            src={Logout}
+                                            alt="Log out button"
+                                        />
                                     </div>
                                 </button>
                             </div>
@@ -186,19 +217,14 @@ const UserProfile: React.FC = () => {
 
                         <section className="mt-4 flex flex-col gap-4">
                             <UserInformationItem
-                                icon="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                                title="Email"
-                                value={profile.email}
+                                icon={School}
+                                title="Education Level"
+                                value={"Bachelor's degree"}
                             />
                             <UserInformationItem
-                                icon="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                                title="Name"
-                                value={profile.email}
-                            />
-                            <UserInformationItem
-                                icon="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                                title="Bio"
-                                value={profile.email}
+                                icon={Flag}
+                                title="Country"
+                                value={"Vietnam"}
                             />
                         </section>
                     </div>
@@ -245,17 +271,17 @@ const UserProfile: React.FC = () => {
 
                             <div className="xs:grid-cols-1 grid mt-4 gap-3 rounded-xl md:grid-cols-3">
                                 <StatisticItem
-                                    icon="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                                    icon={Rank}
                                     title="Rank"
                                     value="#11"
                                 />
                                 <StatisticItem
-                                    icon="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                                    icon={Book}
                                     title="Total time"
                                     value="20h"
                                 />
                                 <StatisticItem
-                                    icon="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                                    icon={Average}
                                     title="Average time"
                                     value="2h"
                                 />
@@ -487,9 +513,14 @@ function EditProfileModal({
                         <AiOutlineClose />
                     </button>
                     <div>
-                        <div className="Modal__header">
-                            <h3 className="mb-3 font-black text-[#FF6F61] text-2xl">
-                                [SVG] Edit profile
+                        <div className="Modal__header flex mb-3 gap-2">
+                            <img
+                                src={User}
+                                alt="user svg"
+                                className="w-8 h-8"
+                            />
+                            <h3 className="font-black text-[#FF6F61] text-2xl">
+                                Edit profile
                             </h3>
                         </div>
                         <div className="Modal__content">
