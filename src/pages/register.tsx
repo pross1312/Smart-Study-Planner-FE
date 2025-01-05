@@ -17,7 +17,7 @@ interface IFormInput {
     email: string;
     password: string;
     confirmPassword: string; // Add the confirm password field
-    otp: number;
+    otp: string;
 }
 
 const Register: React.FC = () => {
@@ -35,7 +35,7 @@ const Register: React.FC = () => {
         setLoading(true);
         try {
             if (isOpenOTP) {
-                await auth.verifyEmail({ ...data, otp: +data.otp });
+                await auth.verifyEmail({ ...data, otp: data.otp });
                 toast.success("Registration successful");
                 navigate("/login");
             } else {

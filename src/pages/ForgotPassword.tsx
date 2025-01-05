@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
+import {TextField, CircularProgress} from "@mui/material";
 import _ from "lodash";
 import Paper from "@mui/material/Paper";
 import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { sendResetPasswordEmail } from "../api/user.api";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
     email: z
@@ -20,20 +23,28 @@ const defaultValues = {
 };
 
 function ForgotPassword() {
+    const navigate = useNavigate();
     const { control, formState, handleSubmit, reset } = useForm({
         mode: "onChange",
         defaultValues,
         resolver: zodResolver(schema),
     });
 
+    const [loading, setLoading] = useState(false); // Loading state
     const { isValid, dirtyFields, errors } = formState;
 
     async function onSubmit(data: {email: string}) {
+        setLoading(true);
         try {
             await sendResetPasswordEmail(data.email);
             reset(defaultValues);
-        } catch (err) {
+            toast.success("Please check your email to set a new password.");
+            navigate("/login");
+        } catch (err: any) {
             console.log(err);
+            toast.error(err.message || "An unexpected error occurred.");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -78,11 +89,15 @@ function ForgotPassword() {
                                 color="secondary"
                                 className="mt-4 w-full"
                                 aria-label="Register"
-                                disabled={_.isEmpty(dirtyFields) || !isValid}
+                                disabled={_.isEmpty(dirtyFields) || !isValid || loading}
                                 type="submit"
                                 size="large"
                             >
-                                Send reset link
+                                {loading ? (
+                                    <CircularProgress size={24} color="inherit" />
+                                ) : (
+                                    "Send reset link"
+                                )}
                             </Button>
 
                             <p
