@@ -58,8 +58,9 @@ class auth {
     localStorage.removeItem(TOKEN);
   }
 
-  static async verifyEmail(data: { email: string; otp: number }): Promise<ResponseFormat | null> {
+  static async verifyEmail(data: { email: string; otp: string }): Promise<ResponseFormat | null> {
     try {
+      console.log(data);
       const response = await fetch(`${this.HOST}/auth/register/verify`, {
         method: "POST",
         headers: {
