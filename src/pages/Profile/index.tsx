@@ -22,6 +22,15 @@ import { useAuth } from "../../store/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../router/path";
 
+// Common function
+const buildTotalTime = (second: number) => {
+    const hours = Math.floor(second / 3600);
+    const minutes = Math.floor((second % 3600) / 60);
+
+    if (hours === 0) return `${minutes}m`;
+    return `${hours}h ${minutes}m`;
+};
+
 const UserProfile: React.FC = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
@@ -32,6 +41,11 @@ const UserProfile: React.FC = () => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false); // Loading state
+
+    const totalFocusMinutes = history.reduce(
+        (acc, curr) => acc + Number.parseInt(curr.span.toString()),
+        0
+    );
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -186,7 +200,7 @@ const UserProfile: React.FC = () => {
                                 />
                             </div>
 
-                            <div>
+                            <div className="flex flex-col justify-center items-start gap-2">
                                 <div className="flex flex-wrap">
                                     <span
                                         className="break-word text-lg font-bold"
@@ -199,9 +213,8 @@ const UserProfile: React.FC = () => {
                                     Advanced (10-20h)
                                 </p>
                                 <div>
-                                    <div className="my-2"></div>
                                     <div className="dark:text-white text-xs">
-                                        <span className="text--bold text-xs">
+                                        <span className="font-bold text-xs text-black">
                                             2 hours
                                         </span>{" "}
                                         left until: &nbsp;
@@ -278,7 +291,7 @@ const UserProfile: React.FC = () => {
                                 <StatisticItem
                                     icon={Book}
                                     title="Total time"
-                                    value="20h"
+                                    value={buildTotalTime(totalFocusMinutes)}
                                 />
                                 <StatisticItem
                                     icon={Average}
@@ -432,13 +445,6 @@ function StatisticItem({ icon, title, value }: any) {
 }
 
 function LeaderBoard({ leaderBoard }: { leaderBoard: LeaderboardEntry[] }) {
-    const buildTotalTime = (second: number) => {
-        const hours = Math.floor(second / 3600);
-        const minutes = Math.floor((second % 3600) / 60);
-
-        if (hours === 0) return `${minutes}m`;
-        return `${hours}h ${minutes}m`;
-    };
     return (
         <table className="w-full">
             <tbody>

@@ -22,6 +22,7 @@ import { getTasks } from "../../api/task.api";
 import { useSearchParams } from "react-router-dom";
 import { Task, TaskStatus } from "../../api/Response";
 import { toast } from "react-toastify";
+import { useAuth } from "../../store/AuthContext";
 
 export enum ModalType {
     Timer,
@@ -58,6 +59,9 @@ const quotes = [
 function Pomodoro() {
     const POMODORO_STEP = 5;
 
+    const { isAuthenticated } = useAuth();
+    const isLoggedIn = isAuthenticated();
+
     const { isFocusing, setIsFocusing } = useFocus();
 
     const [pomoLength, setPomoLength] = useState(25);
@@ -70,7 +74,9 @@ function Pomodoro() {
     const [buttonText, setButtonText] = useState("START");
     const [isEndSession, setIsEndSession] = useState(false);
     // const [volume, setVolume] = useState(1);
-    // const [tasks, setTasks] = useState<Task[]>([]);
+
+    // used for guest mode
+    const [tasks, setTasks] = useState<Task[]>([]);
 
     const [isOpenSettingModal, setIsOpenSettingModal] = useState<ModalType>(
         ModalType.CLOSED
@@ -103,7 +109,7 @@ function Pomodoro() {
             }
         };
 
-        fetchSetting();
+        if (isLoggedIn) fetchSetting();
     }, []);
 
     useEffect(() => {
@@ -185,7 +191,7 @@ function Pomodoro() {
             }
         };
 
-        fetchTasks();
+        if (isLoggedIn) fetchTasks();
     }, [taskId]);
 
     const [play] = useSound(startSfx, {
@@ -257,7 +263,7 @@ function Pomodoro() {
             }
         };
 
-        createHistory();
+        if (isLoggedIn) createHistory();
     }, [isEndSession]);
 
     const onDeadlineReached = () => {
@@ -265,6 +271,26 @@ function Pomodoro() {
         setIsActive(true);
     };
 
+    /**
+     * Those function below are used to render the Pomodoro page in Guest mode
+     */
+
+    const handSaveTask = async (task: Task) => {
+        task.id = tasks.length + 1;
+        setTasks((tasks) => [...tasks, task]);
+    };
+
+    const handleMarkTaskDone = async (id: number) => {
+        setTasks((tasks) =>
+            tasks.map((task) =>
+                task.id === id ? { ...task, status: TaskStatus.Done } : task
+            )
+        );
+    };
+
+    const handleRemoveTask = async (id: number) => {
+        setTasks((tasks) => tasks.filter((task) => task.id !== id));
+    };
     return (
         <div className="flex flex-1 relative flex-col gap-3 p-3 items-center min-h-full overflow-hidden">
             <VideoPlayer />
@@ -370,6 +396,10 @@ function Pomodoro() {
                     setIsOpen={setIsOpenTaskManager}
                     totalTaskInDay={totalTaskInDay.current}
                     completedTaskInDay={totalTimeDoneInDay.current}
+                    tasks={tasks}
+                    onSaveTask={handSaveTask}
+                    onDoneTask={handleMarkTaskDone}
+                    onRemoveTask={handleRemoveTask}
                 />
             </div>
 

@@ -165,3 +165,7 @@ html {
 .overflow-y-overlay {
     overflow-y: overlay;
 }
+
+.text--emerald {
+    color: #a1d38a;
+}

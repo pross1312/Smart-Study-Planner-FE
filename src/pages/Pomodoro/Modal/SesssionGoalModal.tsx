@@ -1,24 +1,67 @@
-import { Task } from "../../../api/Response";
+import { useState } from "react";
+import { Task, TaskStatus } from "../../../api/Response";
+import { useAuth } from "../../../store/AuthContext";
 import {
     formatTimeFromEpoch,
     formatDayFromEpoch,
 } from "../../../utils/DateTImeUtils";
+import Plus from "@/assets/images/plus.svg";
+import { twMerge } from "tailwind-merge";
 
-function TaskItem({ task }: { task?: Task }) {
+function TaskItem({
+    task,
+    onRemoveTask,
+    onDoneTask,
+}: {
+    task?: Task;
+    onRemoveTask?: (index: number) => void;
+    onDoneTask?: (index: number) => void;
+}) {
     return (
         <div className="flex space-x-2 w-full px-3 py-2 items-center rounded-lg bg-gray-600 bg-opacity-40">
-            <div className="flex justify-center w-5 h-5 border-2 border-solid rounded-full cursor-pointer border-white bg-transparent"></div>
-            <div className="break-word w-[calc(100%-36px)] flex-1 text-xs">
+            {task?.status === TaskStatus.Done ? (
+                <div className="flex justify-center w-5 h-5 border-2 border-solid rounded-full cursor-pointer bg-[#78a053] !border-transparent pointer-events-none">
+                    <svg width="16" height="16" fill="none">
+                        <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M8.717 10.053a.667.667 0 0 1-1.044-.827l.053-.065 4.446-4.94a.667.667 0 0 1 1.043.826l-.052.065-4.446 4.94Z"
+                            fill="#fff"
+                        ></path>
+                        <path
+                            d="M7.186 11.748a.667.667 0 0 1-.869.152l-.068-.048-3.332-2.667a.667.667 0 0 1 .764-1.089l.069.048 3.332 2.667c.287.23.334.65.104.937Z"
+                            fill="#fff"
+                        ></path>
+                    </svg>
+                </div>
+            ) : (
+                <div
+                    onClick={() => onDoneTask && onDoneTask(task?.id || 0)}
+                    className="flex justify-center w-5 h-5 border-2 border-solid rounded-full cursor-pointer border-white bg-transparent"
+                ></div>
+            )}
+            <div
+                className={twMerge(
+                    "break-word w-[calc(100%-36px)] flex-1 text-xs",
+                    task?.status === TaskStatus.Done
+                        ? "line-through text-gray-600"
+                        : "text-white"
+                )}
+            >
                 {task?.name}
             </div>
             <p className="text-xs">
-                {formatDayFromEpoch(task?.start_time || 0) + "  "}
-                {formatTimeFromEpoch(task?.start_time || 0)} -
-                {formatTimeFromEpoch(task?.end_time || 0)}
+                {task?.start_time &&
+                    formatDayFromEpoch(task?.start_time) + "  "}
+                {task?.start_time && formatTimeFromEpoch(task?.start_time)} -
+                {task?.end_time && formatTimeFromEpoch(task?.end_time)}
             </p>
 
             <div className="flex items-center">
-                <button type="button">
+                <button
+                    type="button"
+                    onClick={() => onRemoveTask && onRemoveTask(task?.id || 0)}
+                >
                     <svg width="16" height="16" fill="none">
                         <path
                             fill-rule="evenodd"
@@ -39,10 +82,47 @@ type SessionGoalModalProps = {
     task?: Task;
     totalTaskInDay?: number;
     completedTaskInDay?: number;
+    tasks?: Task[];
+    onSaveTask?: (task: Task) => void;
+    onDoneTask?: (id: number) => void;
+    onRemoveTask?: (id: number) => void;
 };
 
-function SessionGoalModal({ isOpen, setIsOpen, task, totalTaskInDay, completedTaskInDay }: SessionGoalModalProps) {
+function SessionGoalModal({
+    isOpen,
+    setIsOpen,
+    task,
+    totalTaskInDay,
+    completedTaskInDay,
+    tasks,
+    onSaveTask,
+    onDoneTask,
+    onRemoveTask,
+}: SessionGoalModalProps) {
     if (!isOpen) return null;
+
+    const { isAuthenticated } = useAuth();
+    const isLoggedIn = isAuthenticated();
+
+    /**
+     * Those function below are used to handle guest mode
+     */
+
+    const [currentTask, setCurrentTask] = useState<Task | undefined>(task);
+
+    const handleSaveTask = (task: Task) => {
+        onSaveTask && onSaveTask(task);
+        setCurrentTask(undefined);
+    };
+
+    const handleRemoveTask = (index: number) => {
+        onRemoveTask && onRemoveTask(index);
+    };
+
+    const handleDoneTask = (index: number) => {
+        onDoneTask && onDoneTask(index);
+    };
+
     return (
         <div className="flex justify-between w-full bg-black bg-opacity-50">
             <div className="fixed flex items-center justify-center ">
@@ -101,6 +181,35 @@ function SessionGoalModal({ isOpen, setIsOpen, task, totalTaskInDay, completedTa
                         </div>
                     </div>
 
+                    {!isLoggedIn && (
+                        <div className="flex mt-2 flex-row items-start justify-between gap-3">
+                            <div className="w-full">
+                                <div className="flex items-center box-border rounded-xl overflow-hidden border-2 border-solid bg-transparent border-white">
+                                    <textarea
+                                        placeholder="Type a goal..."
+                                        value={currentTask?.name || ""}
+                                        onChange={(e) => {
+                                            setCurrentTask({
+                                                ...currentTask,
+                                                name: e.target.value,
+                                            } as Task);
+                                        }}
+                                        className="block w-full px-3 pt-2 text-gray-100 placeholder-gray-300 text-md bg-transparent leading-[18px] overflow-hidden outline-none resize-none h-[36px] min-h-[36px] break-word"
+                                    ></textarea>
+                                </div>
+                            </div>
+                            <button
+                                className="btn text-white rounded-xl bg-white/10 hover:bg-white hover:text-gray-700 disabled:bg-white/10 disabled:text-gray-700 p-2"
+                                title="Add the goal"
+                                onClick={() => {
+                                    handleSaveTask(currentTask as Task);
+                                }}
+                            >
+                                <img src={Plus} alt="Icon of plus button" />
+                            </button>
+                        </div>
+                    )}
+
                     <div className="mt-4 flex h-[80px] items-center justify-center space-x-2 rounded-xl bg-gray-600 bg-opacity-40 px-5 py-[17px]">
                         <div className="h-full flex-1 basis-6/12 self-end">
                             <div className="flex h-full flex-col justify-between whitespace-nowrap text-xs">
@@ -121,7 +230,18 @@ function SessionGoalModal({ isOpen, setIsOpen, task, totalTaskInDay, completedTa
                     </div>
                     <div>
                         <div className="overflow-y-overlay mt-[6px] max-h-[300px] space-y-2.5 pt-2.5">
-                            <TaskItem task={task} />
+                            {isLoggedIn ? (
+                                <TaskItem task={task} />
+                            ) : (
+                                tasks?.map((task) => (
+                                    <TaskItem
+                                        key={task.id}
+                                        task={task}
+                                        onRemoveTask={handleRemoveTask}
+                                        onDoneTask={handleDoneTask}
+                                    />
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>

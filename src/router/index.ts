@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import PublicRoute from "../layouts/PublicRoute";
 import { PATH } from "./path";
 import PrivateRoute from "../layouts/PrivateRoute";
@@ -54,16 +54,12 @@ const router = createBrowserRouter([
                 Component: Pomodoro,
             },
             {
-                path: PATH.IFEATUREPAGE,
-                Component: IFeaturePage,
-            },
-            {
                 path: PATH.PROFILE,
                 Component: UserInfo,
             },
             {
-                path: "/",
-                Component: Home,
+                path: PATH.IFEATUREPAGE,
+                Component: IFeaturePage,
             },
         ],
     },
