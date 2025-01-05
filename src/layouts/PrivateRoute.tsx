@@ -5,7 +5,7 @@ import { PATH } from "../router/path";
 import { useAuth } from "../store/AuthContext";
 import MainLayout from "./MainLayout";
 
-const GuestRoute = [PATH.POMODORO];
+const GuestRoute = [PATH.POMODORO, PATH.PROFILE];
 
 export default function PrivateRoute() {
     const location = useLocation();
@@ -16,7 +16,9 @@ export default function PrivateRoute() {
         return isAuthenticated();
     }, [isLoggedIn]);
 
-    const isGuestRoute = GuestRoute.includes(location.pathname);
+    const isGuestRoute = GuestRoute.some((route) =>
+        location.pathname.toString().includes(route)
+    );
 
     if (isGuestRoute) {
         return <MainLayout />;

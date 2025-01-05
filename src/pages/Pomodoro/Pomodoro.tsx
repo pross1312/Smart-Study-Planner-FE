@@ -176,8 +176,9 @@ function Pomodoro() {
                 ).length;
 
                 const now = Math.floor(Date.now() / 1000);
-                const timeDifference = currentTask.end_time || 0 - now;
+                const timeDifference = (currentTask.end_time || 0) - now;
 
+                console.log("timeDifference " + timeDifference);
                 if (timeDifference > 0) {
                     console.log("timeDifference " + timeDifference);
                     const timeoutId = setTimeout(() => {
@@ -323,14 +324,26 @@ function Pomodoro() {
                                 )
                             }
                         >
-                            <LuMusic />
+                            <LuMusic
+                                color={
+                                    isOpenSettingModal === ModalType.Music
+                                        ? "#ff6f61d9"
+                                        : ""
+                                }
+                            />
                         </ConfigButton>
                         <ConfigButton
                             onClick={() =>
                                 setIsOpenSettingModal(ModalType.Quotes)
                             }
                         >
-                            <FaQuoteLeft />
+                            <FaQuoteLeft
+                                color={
+                                    isOpenSettingModal === ModalType.Quotes
+                                        ? "#ff6f61d9"
+                                        : ""
+                                }
+                            />
                         </ConfigButton>
                         <ConfigButton>
                             <IoStatsChartOutline />

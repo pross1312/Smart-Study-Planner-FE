@@ -56,6 +56,12 @@ const router = createBrowserRouter([
             {
                 path: PATH.PROFILE,
                 Component: UserInfo,
+                children: [
+                    {
+                        path: ":userId",
+                        Component: UserInfo,
+                    }
+                ]
             },
             {
                 path: PATH.IFEATUREPAGE,

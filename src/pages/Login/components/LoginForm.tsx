@@ -15,6 +15,7 @@ import { Navigate } from "react-router-dom";
 import auth from "../../../api/auth";
 import CustomButton from "../../../component/Button/CustomButton";
 import GoogleLoginButton from "../../../component/google";
+import { saveAccountToLocalStorage } from "../../../store/AccountStore";
 interface IFormInput {
     email: string;
     password: string;
@@ -37,6 +38,10 @@ const LoginForm: React.FC = () => {
         const result = await auth.login(data);
         if (result) {
             authContext.setAccessToken(result.data?.token);
+            saveAccountToLocalStorage({
+                user_id: result.data?.user_id,
+                name: result.data?.name,
+            });
             navigate("/home");
         }
         setLoading(false);
