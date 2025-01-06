@@ -45,8 +45,8 @@ export const addTaskFetch = async (
         description: string;
         status: string;
         priority: string;
-        start_time: number;
-        end_time: number;
+        start_time: number | null;
+        end_time: number | null;
     },
     token: string
 ): Promise<ResponseFormat | null> => {
