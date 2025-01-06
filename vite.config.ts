@@ -11,5 +11,5 @@ export default defineConfig({
         global: "window",
     },
     assetsInclude: ["**/*.mp3"],
-    base: "/smart-study-planner-fe/"
+    base: "/Smart-Study-Planner-FE/"
 });
