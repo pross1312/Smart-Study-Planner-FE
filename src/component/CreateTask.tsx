@@ -65,7 +65,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList, classN
 
     const handleSubmit = async () => {
         if (!task.name || !task.status) {
-            toast.error("Task Name, Status, Start Time, and End Time are required!");
+            toast.error("Task Name, Status are required!");
             return;
         }
         
@@ -74,8 +74,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList, classN
             description: task.description,
             status: task.status,
             priority: task.priority,
-            start_time: convertToSeconds(task.start_time),
-            end_time: convertToSeconds(task.end_time)
+            start_time: task.start_time == null ? null : convertToSeconds(task.start_time),
+            end_time: task.end_time == null ? null : convertToSeconds(task.end_time)
         }
         
         const response = await addTaskFetch(taskReq, auth.getAccessToken() || '');
