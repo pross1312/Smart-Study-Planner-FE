@@ -55,7 +55,7 @@ const UserProfile: React.FC = () => {
         const fetchProfile = async () => {
             setLoading(true); // Start loading
             try {
-                if(!userId) return;
+                if (!userId) return;
                 const response = await getProfile(userId);
                 const user = response.data;
                 setProfile(user);
@@ -142,7 +142,7 @@ const UserProfile: React.FC = () => {
 
     return (
         <>
-            <div className="grid gap-5 lg:grid-cols-1 xl:grid-cols-4">
+            <div className="grid gap-5 lg:grid-cols-1 xl:grid-cols-4 bg-[#f4f2f2] h-screen">
                 <div className="xxl:col-span-1 order-1 sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-1">
                     <div className="p-6 bg-white rounded-xl dark:bg-gray-700 st-onboarding-stats-profile-sidebar">
                         <div className="relative mb-3 flex items-center justify-between">
@@ -295,7 +295,12 @@ const UserProfile: React.FC = () => {
                                 <StatisticItem
                                     icon={Rank}
                                     title="Rank"
-                                    value="#11"
+                                    value={`#${
+                                        leaderBoard.findIndex(
+                                            (entry) =>
+                                                entry.email === profile.email
+                                        ) + 1
+                                    }`}
                                 />
                                 <StatisticItem
                                     icon={Book}
@@ -309,6 +314,20 @@ const UserProfile: React.FC = () => {
                                 />
                             </div>
                         </div>
+
+                        <div className="grid gap-6 rounded-xl bg-white p-6 sm:grid-cols-1 md:grid-cols-2">
+                                <div className="">
+                                    <p className="text-black font-bold text-xs">
+                                        Monthly Level
+                                    </p>
+                                </div>
+
+                                <div className="mt-2 flex rounded-lg bg-secondary-400 p-4">
+                                    <div className="flex w-full flex-wrap justify-center">
+                                        
+                                    </div>
+                                </div>
+                            </div>
                     </div>
                 </div>
 

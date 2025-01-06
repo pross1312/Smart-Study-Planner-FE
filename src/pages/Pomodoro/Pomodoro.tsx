@@ -18,7 +18,7 @@ import pauseSfx from "@/assets/sounds/pauseTimer.mp3";
 import { useFocus } from "../../store/FocusContext";
 import { addHistory, getSetting } from "../../api/pomodoro.api";
 import SessionGoalModal from "./Modal/SesssionGoalModal";
-import { getTasks } from "../../api/task.api";
+import { getTasks, updateTasks } from "../../api/task.api";
 import { useSearchParams } from "react-router-dom";
 import { Task, TaskStatus } from "../../api/Response";
 import { toast } from "react-toastify";
@@ -121,6 +121,12 @@ function Pomodoro() {
             try {
                 console.log(taskId);
                 if (!taskId) return;
+                await updateTasks(
+                    taskId + "",
+                    undefined,
+                    undefined,
+                    TaskStatus.InProgress
+                );
                 const response = await getTasks();
                 // setTasks(response.data.tasks);
                 const currentTask = response.data.tasks.find(

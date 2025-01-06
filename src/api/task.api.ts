@@ -1,5 +1,5 @@
 import { api } from "./api";
-import { BaseResponse, Task, TaskPagination } from "./Response";
+import { BaseResponse, Task, TaskPagination, TaskStatus } from "./Response";
 
 const getTasks = async (params?: {
     status?: string;
@@ -15,10 +15,11 @@ const getUnAssignedTasks = async () => {
 
 const updateTasks = async (
     taskId: string,
-    start_time: number,
-    end_time: number
+    start_time?: number,
+    end_time?: number,
+    status?: TaskStatus
 ) => {
-    return api.put(`/task/${taskId}`, { start_time, end_time });
+    return api.put(`/task/${taskId}`, { start_time, end_time, status });
 };
 
 export { getTasks, updateTasks, getUnAssignedTasks };
