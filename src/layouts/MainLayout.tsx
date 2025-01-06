@@ -5,8 +5,8 @@ import { twMerge } from "tailwind-merge";
 import { useFocus } from "../store/FocusContext";
 import ChatBox from "../component/ChatBox";
 
-export default function () {
-    const [activeComponent, setActiveComponent] = useState<string>("Home");
+export default function ({defaultActiveComponent}: {defaultActiveComponent: string}) {
+    const [activeComponent, setActiveComponent] = useState<string>(defaultActiveComponent);
 
     const handleMenuClick = (label: string) => {
         setActiveComponent(label);

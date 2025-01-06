@@ -224,7 +224,7 @@ const TimerModal = ({
                             <div className="text-white mt-3">
                                 <TimerInput
                                     header="Break time (min)"
-                                    time={formatTimeLeft(shortLength * 60)}
+                                    time={formatTimeLeft(shortLength)}
                                     onCLickMinus={onClicKMinusBreakTime}
                                     onClickPlus={onClickPlusBreakTime}
                                 />

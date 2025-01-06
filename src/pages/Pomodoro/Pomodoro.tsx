@@ -57,7 +57,7 @@ const quotes = [
 ];
 
 function Pomodoro() {
-    const POMODORO_STEP = 5;
+    const POMODORO_STEP = 5 * 60; // 5 minutes
 
     const { isAuthenticated } = useAuth();
     const isLoggedIn = isAuthenticated();
@@ -81,7 +81,7 @@ function Pomodoro() {
     const [isOpenSettingModal, setIsOpenSettingModal] = useState<ModalType>(
         ModalType.CLOSED
     );
-    const [secondsLeft, setSecondsLeft] = useState(pomoLength * 60);
+    const [secondsLeft, setSecondsLeft] = useState(pomoLength);
     const [quote, setQuote] = useState(quotes[0]);
     const [isOpenTaskManager, setIsOpenTaskManager] = useState(true);
 
@@ -113,7 +113,7 @@ function Pomodoro() {
     }, []);
 
     useEffect(() => {
-        setSecondsLeft(pomoLength * 60);
+        setSecondsLeft(pomoLength);
     }, [pomoLength]);
 
     useEffect(() => {
@@ -233,12 +233,12 @@ function Pomodoro() {
         setIsActive(false);
         setIsFocusing(!isFocusing);
         setButtonText("START");
-        setSecondsLeft(pomoLength * 60);
+        setSecondsLeft(pomoLength);
     };
 
     const handleStartBreakTimer = () => {
         setIsActive(!isActive);
-        setSecondsLeft(shortLength * 60);
+        setSecondsLeft(shortLength);
         setIsStartBreakTimer(true);
         setIsFocusing(false);
     };
@@ -246,7 +246,7 @@ function Pomodoro() {
     const handleStopBreakTimer = () => {
         setIsActive(false);
         setIsStartBreakTimer(false);
-        setSecondsLeft(pomoLength * 60);
+        setSecondsLeft(pomoLength);
     };
 
     const handlePauseFocusTimer = () => {
