@@ -7,6 +7,7 @@ import Calendar from "@/assets/images/calendar.svg";
 import Goal from "@/assets/images/goal.svg";
 import User from "@/assets/images/user.svg";
 import Plus from "@/assets/images/plus.svg";
+import { getAccountFromLocalStorage } from "../store/AccountStore";
 
 interface SidebarProps {
     onMenuClick: (label: string) => void;
@@ -41,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onMenuClick, activeComponent }) => {
             id: 4,
             icon: User,
             label: "Profile",
-            link: PATH.PROFILE,
+            link: PATH.PROFILE + `/${getAccountFromLocalStorage()?.user_id}`,
             title: "Profile",
         },
     ];
