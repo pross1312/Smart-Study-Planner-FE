@@ -9,6 +9,7 @@ import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { Task, TaskStatus } from "../api/Response";
 import { toast } from 'react-toastify';
+import DeleteModal from "./Modal/DeleteModal";
 
 interface UpdateTaskModalProps {
     task: Task;
@@ -33,6 +34,8 @@ function parseDate(timestamp: number) {
 const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDelete }) => {
     const auth = useAuth();
     const [show, setShow] = useState<boolean>(false);
+    const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
+
     const [updatedTask, setUpdatedTask] = useState<Task>(task);
 
     const handleShow = () => setShow(true);
@@ -65,11 +68,6 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
     };
 
     const handleDelete = async () => {
-        const userConfirmed = window.confirm("Do you want to delete this task?");
-        if (!userConfirmed) {
-            return;
-        }
-
         const response = await deleteTaskFetch(auth.getAccessToken() || "[]", task.id);
         if (response?.success === true) {
             toast.success("Delete successful");
@@ -104,7 +102,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
 
                 {/* Delete Task Icon */}
                 <div
-                    onClick={handleDelete}
+                    onClick={() => setIsOpenDeleteModal(true)}
                     style={{
                         display: "inline-flex",
                         justifyContent: "center",
@@ -244,6 +242,18 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            {/* Delete confirm model */}
+            <DeleteModal
+                title="Delete Confirmation"
+                message="Are you sure you want to delete this item?"
+                confirmButtonText="Yes, delete it"
+                cancelButtonText="No, keep it"
+                onConfirm={handleDelete}
+                onCancel={handleClose}
+                isOpen={isOpenDeleteModal}
+                setIsOpen={setIsOpenDeleteModal}
+      />
         </>
     );
 };

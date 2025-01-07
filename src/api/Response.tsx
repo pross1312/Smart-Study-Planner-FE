@@ -40,6 +40,7 @@ export enum TaskStatus {
     ToDo = "TODO",
     InProgress = "IN_PROGRESS",
     Done = "DONE",
+    Expired = "EXPIRED",
 }
 
 export interface TaskPagination<T> {

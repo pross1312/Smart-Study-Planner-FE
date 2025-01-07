@@ -7,6 +7,7 @@ import {
 } from "../../../utils/DateTImeUtils";
 import Plus from "@/assets/images/plus.svg";
 import { twMerge } from "tailwind-merge";
+import { getTasks, updateTasks } from "../../../api/task.api";
 
 function TaskItem({
     task,
@@ -80,6 +81,7 @@ type SessionGoalModalProps = {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
     task?: Task;
+    setTask?: (task: Task) => void;
     totalTaskInDay?: number;
     completedTaskInDay?: number;
     tasks?: Task[];
@@ -92,6 +94,7 @@ function SessionGoalModal({
     isOpen,
     setIsOpen,
     task,
+    setTask,
     totalTaskInDay,
     completedTaskInDay,
     tasks,
@@ -104,6 +107,20 @@ function SessionGoalModal({
     const { isAuthenticated } = useAuth();
     const isLoggedIn = isAuthenticated();
 
+    const handleDoneTaskForLoggedUser = async (taskId: number) => {
+        try {
+            await updateTasks(taskId + "", undefined, undefined, TaskStatus.Done);
+            const response = await getTasks();
+            const taskUpdated = response.data.tasks.find(
+                (task) => task.id == taskId
+            );
+            if (!taskUpdated) return;
+            setTask && setTask(taskUpdated);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+    
     /**
      * Those function below are used to handle guest mode
      */
@@ -231,7 +248,7 @@ function SessionGoalModal({
                     <div>
                         <div className="overflow-y-overlay mt-[6px] max-h-[300px] space-y-2.5 pt-2.5">
                             {isLoggedIn ? (
-                                <TaskItem task={task} />
+                                <TaskItem task={task} onDoneTask={handleDoneTaskForLoggedUser} />
                             ) : (
                                 tasks?.map((task) => (
                                     <TaskItem

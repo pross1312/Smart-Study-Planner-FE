@@ -119,20 +119,33 @@ function Pomodoro() {
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                console.log(taskId);
                 if (!taskId) return;
-                await updateTasks(
-                    taskId + "",
-                    undefined,
-                    undefined,
-                    TaskStatus.InProgress
-                );
+
                 const response = await getTasks();
                 // setTasks(response.data.tasks);
                 const currentTask = response.data.tasks.find(
                     (task) => task.id == taskId
                 );
                 setCurrentTask(currentTask);
+
+                if (currentTask?.status !== TaskStatus.Done) {
+                    await updateTasks(
+                        taskId + "",
+                        undefined,
+                        undefined,
+                        TaskStatus.InProgress
+                    );
+
+                    setCurrentTask((task) => {
+                        if (task) {
+                            return {
+                                ...task,
+                                status: TaskStatus.InProgress,
+                            };
+                        }
+                        return task;
+                    });
+                }
 
                 if (!currentTask) {
                     toast.warning("Task not found");
@@ -192,7 +205,12 @@ function Pomodoro() {
                     }, timeDifference * 1000);
 
                     return () => clearTimeout(timeoutId);
-                } else toast.warning("Task deadline has passed");
+                } else if (
+                    timeDifference < 0 &&
+                    currentTask.status !== TaskStatus.Done
+                ) {
+                    toast.warning("Task deadline has passed");
+                }
             } catch (error) {
                 console.error("Failed to fetch todos:", error);
             }
@@ -411,6 +429,7 @@ function Pomodoro() {
                 />
                 <SessionGoalModal
                     task={currentTask}
+                    setTask={setCurrentTask}
                     isOpen={isOpenTaskManager}
                     setIsOpen={setIsOpenTaskManager}
                     totalTaskInDay={totalTaskInDay.current}
