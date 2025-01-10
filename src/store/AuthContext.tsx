@@ -25,7 +25,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const getAccessToken = (): string | null => {
     const storedToken = localStorage.getItem('token');
-    if (storedToken !== null) return JSON.parse(storedToken);
+    if (storedToken !== null) {
+      try {
+        return JSON.parse(storedToken);
+      } catch (error) {
+        console.error('Error parsing stored token:', error);
+        return null; 
+      }
+    }
     return null;
   };
 

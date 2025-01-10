@@ -130,7 +130,7 @@ const TaskList = () => {
 
     return (
         <div
-            className="container fix-scroll m-0 d-flex"
+            className="container fix-scroll d-flex w-full m-auto"
             style={{
                 padding: "0px 0px 0 41px ",
                 height: "92%",
@@ -267,7 +267,7 @@ const TaskList = () => {
                             <div></div>
                         </div>
                         {tasks?.map((task) => (
-                            <div className="task-details" key={task.id}>
+                            <div className="task-details px-4" key={task.id}>
                                 <div
                                     className="task-field task-name hover-detail"
                                     style={{ fontWeight: "600" }}

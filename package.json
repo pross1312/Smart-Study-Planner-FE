@@ -51,6 +51,7 @@
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.4.7",
     "echarts": "^5.6.0",
     "echarts-for-react": "^3.0.2",
     "js-cookie": "^3.0.5",
@@ -86,6 +87,7 @@
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@types/simple-peer": "^9.11.8",
     "@types/socket.io-client": "^3.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.11.1",
@@ -98,10 +100,14 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.12",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "global": "^4.4.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
+    "process": "^0.11.10",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.7.0",
-    "vite": "^6.0.7"
+    "vite": "^6.0.7",
+    "vite-compatible-readable-stream": "^3.6.1",
+    "vite-plugin-node-polyfills": "^0.22.0"
   }
 }

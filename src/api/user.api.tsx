@@ -41,6 +41,10 @@ const getProfile = async (userId: string): Promise<BaseResponse<Profile>> => {
     return (await api.get(`/auth/profile/${userId}`)).data;
 };
 
+const getProfileWithOutId = async (): Promise<BaseResponse<Profile>> => {
+    return (await api.get(`/user/profile`)).data;
+};
+
 const getLeaderboard = async (
     page: number,
     page_size: number,
@@ -61,4 +65,4 @@ const sendResetPasswordEmail = async (
     return await api.get(encodeURI(`/auth/password/reset/${email}`));
 };
 
-export { updateUser, getProfile, getLeaderboard, sendResetPasswordEmail };
+export { updateUser, getProfile, getLeaderboard, sendResetPasswordEmail, getProfileWithOutId };

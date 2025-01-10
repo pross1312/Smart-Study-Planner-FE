@@ -19,9 +19,9 @@ const updateSetting = async (
     long_break_time: number
 ) => {
     return api.put(`/pomodoro/setting`, {
-        pomodoro_time,
-        break_time,
-        long_break_time,
+        pomodoroTime: pomodoro_time,
+        breakTime: break_time,
+        longBreakTime: long_break_time,
     });
 };
 

@@ -16,7 +16,7 @@ import { useSound } from "use-sound";
 import startSfx from "@/assets/sounds/startTimer.mp3";
 import pauseSfx from "@/assets/sounds/pauseTimer.mp3";
 import { useFocus } from "../../store/FocusContext";
-import { addHistory, getSetting } from "../../api/pomodoro.api";
+import { addHistory, getSetting, updateSetting } from "../../api/pomodoro.api";
 import SessionGoalModal from "./Modal/SesssionGoalModal";
 import { getTasks, updateTasks } from "../../api/task.api";
 import { useSearchParams } from "react-router-dom";
@@ -64,8 +64,8 @@ function Pomodoro() {
 
     const { isFocusing, setIsFocusing } = useFocus();
 
-    const [pomoLength, setPomoLength] = useState(25);
-    const [shortLength, setShortLength] = useState(5);
+    const [pomoLength, setPomoLength] = useState(1500);
+    const [shortLength, setShortLength] = useState(300);
 
     const [isOpenTimerModal, setIsOpenTimerModal] = useState(true);
     const [isHideQuotes, setIsHideQuotes] = useState(true);
@@ -104,11 +104,12 @@ function Pomodoro() {
                 const response = await getSetting();
                 setPomoLength(+response.data.data.pomodoro_time);
                 setShortLength(+response.data.data.break_time);
+
+                console.log(response.data.data.pomodoro_time);
             } catch (error) {
                 console.error("Failed to fetch setting", error);
             }
         };
-
         if (isLoggedIn) fetchSetting();
     }, []);
 
@@ -271,6 +272,15 @@ function Pomodoro() {
         setIsActive(!isActive);
     };
 
+    const handleUpdatePomodoroTime = async (time: number) => {
+        try {
+            await updateSetting(time, shortLength, shortLength);
+            setPomoLength(time);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     useEffect(() => {
         const createHistory = async () => {
             if (isEndSession) {
@@ -316,6 +326,7 @@ function Pomodoro() {
     const handleRemoveTask = async (id: number) => {
         setTasks((tasks) => tasks.filter((task) => task.id !== id));
     };
+
     return (
         <div className="flex flex-1 relative flex-col gap-3 p-3 items-center min-h-full overflow-hidden">
             <VideoPlayer />
@@ -395,16 +406,16 @@ function Pomodoro() {
                     setButtonText={setButtonText}
                     isFocusDone={isEndSession}
                     setIsFocusDone={setIsEndSession}
-                    onClickPlusTime={() =>
-                        setPomoLength(pomoLength + POMODORO_STEP)
-                    }
-                    onClicKMinusTime={() =>
-                        setPomoLength(
-                            pomoLength - POMODORO_STEP > 0
+                    onClickPlusTime={() => {
+                        handleUpdatePomodoroTime(pomoLength + POMODORO_STEP);
+                    }}
+                    onClicKMinusTime={() => {
+                        const updatedTime =
+                            pomoLength - POMODORO_STEP >= 0
                                 ? pomoLength - POMODORO_STEP
-                                : 0
-                        )
-                    }
+                                : 0;
+                        handleUpdatePomodoroTime(updatedTime);
+                    }}
                     onClicKMinusBreakTime={() =>
                         setShortLength(
                             shortLength - POMODORO_STEP > 0

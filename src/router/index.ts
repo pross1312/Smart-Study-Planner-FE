@@ -11,6 +11,7 @@ import IFeaturePage from "../pages/FeaturePage";
 import GoogleCallback from "../component/GoogleCallback";
 import Pomodoro from "../pages/Pomodoro/Pomodoro";
 import ForgotPassword from "../pages/ForgotPassword";
+import VideoRoom from "../pages/VideoRoom";
 
 const router = createBrowserRouter([
     {
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
             {
                 path: PATH.POMODORO,
                 Component: Pomodoro,
+            },
+            {
+                path: PATH.FOCUS_ROOM,
+                Component: VideoRoom,
             },
             {
                 path: PATH.PROFILE,
