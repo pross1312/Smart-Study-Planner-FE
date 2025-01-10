@@ -8,6 +8,11 @@ import "./css/CreateTask.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../store/AuthContext";
 import { toast } from "react-toastify";
+import { CircularProgress } from "@mui/material";
+import { z } from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { TaskStatus } from "../api/Response";
 
 interface Task {
     name: string;
@@ -18,13 +23,27 @@ interface Task {
     end_time: string;
 }
 
-// function convertTime(timestamp: string): string {
-//     const date = new Date(timestamp);
-//     const hours = date.getUTCHours();
-//     const minutes = date.getUTCMinutes();
-//     const totalSeconds = (hours * 3600) + (minutes * 60);
-//     return totalSeconds.toString();
-// }
+
+const TaskSchema = z.object({
+    name: z.string().min(1, "Task name is required"),
+    description: z.string().optional(),
+    status: z.string(),
+    priority: z.string(),
+    start_time: z.string().optional(),
+    end_time: z.string().optional(),
+})
+.refine(
+    (data) =>
+      !data.start_time || // If start_time is not defined, skip the validation
+      (data.end_time && new Date(data.end_time) > new Date(data.start_time)), // Ensure end_time > start_time
+    {
+      message: "End time must be greater than start time if start time is provided",
+      path: ["end_time"], // Point of failure
+    }
+  );
+;
+
+type TaskSchemaType = z.infer<typeof TaskSchema>;
 
 function convertToSeconds(dateString: string): number {
     const date = new Date(dateString);
@@ -40,48 +59,56 @@ interface CreateTaskModalProps {
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList, className }) => {
     const auth = useAuth();
     const [show, setShow] = useState<boolean>(false);
-    const [task, setTask] = useState<Task>({
-        name: "",
-        description: "",
-        status: "",
-        priority: "Medium",
-        start_time: "",
-        end_time: "",
-    });
+
+    const [isCreating, setIsCreating] = useState<boolean>(false);
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        control,
+        reset,
+        formState: { errors },
+      } = useForm<TaskSchemaType>({
+        resolver: zodResolver(TaskSchema),
+        defaultValues: {
+          name: "",
+          description: "",
+          status: TaskStatus.ToDo,
+          priority: "MEDIUM",
+          start_time: "",
+          end_time: "",
+        },
+      });
+
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    ) => {
-        const { name, value } = e.target;
-        setTask((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleStatusChange = (status: string) => {
-        setTask((prev) => ({ ...prev, status }));
-    };
-
-    const handleSubmit = async () => {
-        if (!task.name || !task.status) {
-            toast.error("Task Name, Status are required!");
-            return;
-        }
+    const onSubmit = async (data : TaskSchemaType) => {
+        if (isCreating) return;
+        setIsCreating(true);
         
         const taskReq = {
-            name: task.name,
-            description: task.description,
-            status: task.status,
-            priority: task.priority,
-            start_time: task.start_time == null ? null : convertToSeconds(task.start_time),
-            end_time: task.end_time == null ? null : convertToSeconds(task.end_time)
+            ...data,
+            description: data.description || "",
+            start_time: data.start_time ? convertToSeconds(data.start_time) : null,
+            end_time: data.end_time ? convertToSeconds(data.end_time) : null,
         }
         
         const response = await addTaskFetch(taskReq, auth.getAccessToken() || '');
         toast.success(response?.data);
-        addTaskToList(task);
-        if (response?.statusCode == 200) handleClose();
+        addTaskToList({
+            ...taskReq,
+            start_time: taskReq.start_time ? new Date(taskReq.start_time * 1000).toISOString() : "",
+            end_time: taskReq.end_time ? new Date(taskReq.end_time * 1000).toISOString() : "",
+        });
+        if (response?.statusCode == 200) {
+            handleClose();
+            reset();
+        }
+        
+        setIsCreating(false);
     };
 
     return (
@@ -115,17 +142,20 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList, classN
                     <Modal.Title>Create Task</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form>
+                    <Form onSubmit={handleSubmit(onSubmit)}>
                         {/* Task Name */}
                         <Form.Group className="mb-3" controlId="taskName">
                             <Form.Label>Task Name</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Enter task name"
-                                name="name"
-                                value={task.name}
-                                onChange={handleChange}
+                                {...register("name")}
+                                isInvalid={!!errors.name}
+                                required
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.name?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="taskDescription">
@@ -134,47 +164,25 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList, classN
                                 as="textarea"
                                 rows={3}
                                 placeholder="Enter task description"
-                                name="description"
-                                value={task.description}
-                                onChange={handleChange}
+                                {...register("description")}
                             />
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="taskStatus">
                             <Form.Label>Status</Form.Label>
-                            <div className="status-options">
-                                {["TODO", "IN_PROGRESS", "DONE"].map((status) => (
-                                    <div
-                                        key={status}
-                                        className={`status-box ${
-                                            task.status === status ? "active" : ""
-                                        }`}
-                                        onClick={() => handleStatusChange(status)}
-                                        style={{
-                                            padding: "10px 15px",
-                                            border: "1px solid #ccc",
-                                            borderRadius: "5px",
-                                            cursor: "pointer",
-                                            textAlign: "center",
-                                            marginRight: "10px",
-                                            backgroundColor:
-                                                task.status === status ? "#007bff" : "white",
-                                            color: task.status === status ? "white" : "black",
-                                            transition: "background-color 0.3s",
-                                        }}
-                                    >
-                                        {status}
-                                    </div>
-                                ))}
-                            </div>
+                            <Form.Select {...register("status")} isInvalid={!!errors.status}>
+                                <option value={TaskStatus.ToDo}>TODO</option>
+                                <option value={TaskStatus.InProgress}>IN_PROGRESS</option>
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.status?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="taskPriority">
                             <Form.Label>Priority</Form.Label>
                             <Form.Select
-                                name="priority"
-                                value={task.priority}
-                                onChange={handleChange}
+                                {...register("priority")} isInvalid={!!errors.priority}
                             >
                                 <option value="HIGH">High</option>
                                 <option value="MEDIUM">Medium</option>
@@ -185,8 +193,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList, classN
                         <Form.Group className="mb-3 d-flex flex-column" controlId="taskStart_time">
                             <Form.Label>Start Time</Form.Label>
                             <DatePicker
-                                selected={task.start_time ? new Date(task.start_time) : null}
-                                onChange={(time) => setTask(prev => ({ ...prev, start_time: time?.toISOString() || '' }))}
+                                selected={watch("start_time") ? new Date(watch("start_time") || "")  : null}
+                                onChange={(date) => setValue("start_time", date?.toISOString() || "")}
                                 showTimeSelect
                                 timeFormat="HH:mm"
                                 timeIntervals={15}
@@ -197,29 +205,48 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ addTaskToList, classN
                         </Form.Group>
 
                         <Form.Group className="mb-3 d-flex flex-column" controlId="taskEnd_time">
-                            <Form.Label>End Time</Form.Label>
-                            <DatePicker
-                                selected={task.end_time ? new Date(task.end_time) : null}
-                                onChange={(time) => setTask(prev => ({ ...prev, end_time: time?.toISOString() || '' }))}
-                                showTimeSelect
-                                timeFormat="HH:mm"
-                                timeIntervals={15}
-                                dateFormat="yyyy-MM-dd HH:mm"
-                                placeholderText="Select end date"
-                                className="form-control"
-                            />
+                            <Form.Label >End Time</Form.Label>
+                            <Controller
+                                name="end_time"
+                                control={control}
+                                render={({ field }) => (
+                                    <DatePicker
+                                    selected={field.value ? new Date(field.value) : null}
+                                    onChange={(date) => field.onChange(date?.toISOString() || "")}
+                                    showTimeSelect
+                                    timeFormat="HH:mm"
+                                    timeIntervals={15}
+                                    dateFormat="yyyy-MM-dd HH:mm"
+                                    placeholderText="Select end date"
+                                    className={`form-control ${errors.end_time ? "is-invalid" : ""}`}
+                                    />
+                                )}
+                                />
+                                <p className="text-red-600 text-sm cursor-default">
+                                    {errors.end_time?.message}
+                                </p>
                         </Form.Group>
 
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleClose}>
+                                Cancel
+                            </Button>
+                            <Button 
+                                type="submit" variant="primary" disabled={isCreating}>
+                                {isCreating ? (
+                                <CircularProgress
+                                    size={24}
+                                    color="inherit"
+                                />
+                            ) : (
+                                "Save task"
+                            )}
+                            </Button>
+                        </Modal.Footer>
+                       
                     </Form>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Cancel
-                    </Button>
-                    <Button variant="primary" onClick={handleSubmit}>
-                        Save Task
-                    </Button>
-                </Modal.Footer>
+                
             </Modal>
         </>
     );

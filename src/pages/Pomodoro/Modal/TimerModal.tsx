@@ -229,7 +229,7 @@ const TimerModal = ({
                                     onClickPlus={onClickPlusBreakTime}
                                 />
                             </div>
-                            <button
+                                <button
                                 className="mt-4 flex h-8 w-full items-center justify-center rounded-lg border-2 border-solid 
                          border-white py-2 text-sm font-bold bg-transparent text-white hover:bg-white hover:text-black"
                                 onClick={handleStartFocusTimerClick}

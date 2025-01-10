@@ -5,6 +5,7 @@ export const PATH = {
     HOME: "/home",
     TASKS: "/tasks",
     PROFILE: "/profile",
+    FOCUS_ROOM: "/focus-room",
     SETTINGS: "/settings",
     GOOGLE_CALL_BACK: "/google/callback",
     POMODORO: "/pomodoro",

@@ -14,6 +14,8 @@ import { getUnAssignedTasks, updateTasks } from "../../../api/task.api";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { EventInput } from "@fullcalendar/core/index.js";
+import { Tooltip } from "@mui/material";
+import { fetchHolidays } from "../../../api/google.api";
 
 export function CustomCalendar() {
     const calendarRef = createRef<FullCalendar>();
@@ -48,6 +50,7 @@ export function CustomCalendar() {
     // Get todos = calendar event
     useEffect(() => {
         const fetchTodos = async () => {
+            console.log("fetching todos");
             try {
                 if (startDate === "" || endDate === "") return;
 
@@ -70,7 +73,7 @@ export function CustomCalendar() {
                             end_time: number;
                         } => task.start_time !== null && task.end_time !== null
                     )
-                    .map((task : any) => ({
+                    .map((task: any) => ({
                         id: task.id.toString(),
                         name: task.name,
                         estimatedTime: task.end_time - task.start_time,
@@ -80,7 +83,8 @@ export function CustomCalendar() {
                         start_time: task.start_time,
                         end_time: task.end_time,
                     }));
-                setEvents(transformedTodos);
+                const ggResponse = await fetchHolidays({ startDate, endDate });
+                setEvents([...transformedTodos, ...ggResponse]);
                 setTodos(transformedTodos);
 
                 console.log(transformedTodos);
@@ -207,16 +211,47 @@ export function CustomCalendar() {
                     editable={true}
                     eventResizableFromStart={true}
                     selectable={true}
-                    eventContent={(eventInfo) => (
-                        <div onClick={() => handleTaskClick(eventInfo)}>
-                            <b>{eventInfo.event.extendedProps.name}</b>
-                            <i>
-                                {secondsToHoursMinutes(
-                                    eventInfo.event.extendedProps.estimatedTime
-                                )}
-                            </i>
-                        </div>
-                    )}
+                    eventContent={(eventInfo) =>
+                        eventInfo.event.extendedProps.isHoliday ? (
+                            <Tooltip
+                                enterDelay={1000}
+                                title={eventInfo.event.extendedProps.name}
+                            >
+                                <div className="w-full max-w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                                    <b className="text-ellipsis text-[#CE0707] font-medium text-xs rounded border border-[#FFC3C3] border-solid bg-[#FFF0F0] px-[6px] py-[3px]">
+                                        {eventInfo.event.extendedProps.name}
+                                    </b>
+                                </div>
+                            </Tooltip>
+                        ) : (
+                            <Tooltip
+                                enterDelay={1000}
+                                title={
+                                    eventInfo.event.extendedProps.name +
+                                    " " +
+                                    secondsToHoursMinutes(
+                                        eventInfo.event.extendedProps
+                                            .estimatedTime
+                                    )
+                                }
+                            >
+                                <div
+                                    onClick={() => handleTaskClick(eventInfo)}
+                                    className="w-full max-w-full overflow-hidden whitespace-nowrap text-ellipsis"
+                                >
+                                    <b className="text-ellipsis">
+                                        {eventInfo.event.extendedProps.name}
+                                    </b>
+                                    <i className="text-ellipsis">
+                                        {secondsToHoursMinutes(
+                                            eventInfo.event.extendedProps
+                                                .estimatedTime
+                                        )}
+                                    </i>
+                                </div>
+                            </Tooltip>
+                        )
+                    }
                     eventReceive={(info) => {
                         handleAddTimeForTask(info);
                     }}

@@ -174,7 +174,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                                             transition: "background-color 0.3s",
                                         }}
                                     >
-                                        {status}
+                                        {status.replace("_", " ")}
                                     </div>
                                 ))}
                             </div>
@@ -197,7 +197,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                         <Form.Group className="mb-3 d-flex flex-column" controlId="taskStartTime">
                             <Form.Label>Start Time</Form.Label>
                             <DatePicker
-                                selected={updatedTask.start_time ? parseDate(updatedTask.start_time * 1000) : null}
+                                selected={updatedTask.start_time ? parseDate(+updatedTask.start_time) : null}
                                 onChange={(date) =>
                                     setUpdatedTask((prev) => ({
                                         ...prev,
@@ -216,7 +216,7 @@ const UpdateTaskModal: React.FC<UpdateTaskModalProps> = ({ task, onUpdate, onDel
                         <Form.Group className="mb-3 d-flex flex-column" controlId="taskEndTime">
                             <Form.Label>End Time</Form.Label>
                             <DatePicker
-                                selected={updatedTask.end_time ? parseDate(updatedTask.end_time * 1000) : null}
+                                selected={updatedTask.end_time ? parseDate(+updatedTask.end_time) : null}
                                 onChange={(date) =>
                                     setUpdatedTask((prev) => ({
                                         ...prev,

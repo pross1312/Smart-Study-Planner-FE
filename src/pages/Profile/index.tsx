@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
     getLeaderboard,
-    getProfile,
+    getProfileWithOutId,
     LeaderboardEntry,
     Profile,
     updateUser,
@@ -19,9 +19,8 @@ import Rank from "@/assets/images/rank.svg";
 import User from "@/assets/images/user.svg";
 import Logout from "@/assets/images/logout.svg";
 import { useAuth } from "../../store/AuthContext";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { PATH } from "../../router/path";
-import { getAccountFromLocalStorage } from "../../store/AccountStore";
 
 // Common function
 const buildTotalTime = (second: number) => {
@@ -35,9 +34,6 @@ const buildTotalTime = (second: number) => {
 const UserProfile: React.FC = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
-
-    const { userId } = useParams<{ userId: string }>();
-    const isOwnProfile = userId === getAccountFromLocalStorage()?.user_id;
 
     const [profile, setProfile] = useState<Profile>();
     const [leaderBoard, setLeaderBoard] = useState<LeaderboardEntry[]>([]);
@@ -55,8 +51,7 @@ const UserProfile: React.FC = () => {
         const fetchProfile = async () => {
             setLoading(true); // Start loading
             try {
-                if (!userId) return;
-                const response = await getProfile(userId);
+                const response = await getProfileWithOutId();
                 const user = response.data;
                 setProfile(user);
             } catch (error) {
@@ -152,53 +147,48 @@ const UserProfile: React.FC = () => {
                                 </div>
                                 <div className="text-xx text-gray-300"></div>
                             </div>
-                            {isOwnProfile && (
-                                <div className="flex gap-2">
-                                    <button
-                                        className="Modal__button"
-                                        onClick={() => setIsEditing(true)}
-                                        type="button"
-                                    >
-                                        <div>
-                                            <svg
-                                                width="24"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="icons--xs path--fill-current text-gray-300"
-                                            >
-                                                <g
-                                                    fill="none"
-                                                    fill-rule="evenodd"
-                                                >
-                                                    <path
-                                                        d="M16.824 3.197a2.91 2.91 0 01.877 3.895l-.092.144-5.642 8.365a1 1 0 01-1.718-1.018l.06-.1 5.642-8.365a.91.91 0 00-1.444-1.102l-.064.084L8.8 13.465a1 1 0 01-1.717-1.017l.06-.1 5.642-8.366a2.91 2.91 0 014.04-.785z"
-                                                        fill="#9656A1"
-                                                        fill-rule="nonzero"
-                                                    ></path>
-                                                    <path
-                                                        d="M6.52 14.474a1 1 0 01.382.155l2.56 1.722A1 1 0 019.473 18h6.33c.042 0 .085.003.126.008l.022.004c.036.005.07.012.104.02l.02.007c.034.008.066.02.098.032.008.005.017.008.025.012.034.013.066.03.098.047l.01.007a.845.845 0 01.093.06l.057.046-.04-.032c.066.05.125.11.176.176l.006.009.007.009a.977.977 0 01.116.2l.01.025a.789.789 0 01.034.097c0 .007.003.014.004.02a.969.969 0 01.001.506l-.006.02a.807.807 0 01-.033.098l-.011.025a.948.948 0 01-.115.2l-.046.058-.038.04-.012.013c-.029.03-.06.057-.093.083l-.018.013a.906.906 0 01-.092.061l-.01.006a.828.828 0 01-.097.049l-.026.01a.783.783 0 01-.098.034l-.02.004a.83.83 0 01-.104.022l-.042.004-.107.007h-10c-.06 0-.118-.005-.176-.015a1.001 1.001 0 01-.902-1.174l.634-3.53a1 1 0 011.161-.808zm12.283 3.527c.263 0 .521.107.707.293.186.186.293.444.293.707 0 .263-.107.521-.293.707a1.008 1.008 0 01-.707.293c-.263 0-.52-.107-.707-.293a1.007 1.007 0 01-.293-.707c0-.263.107-.52.293-.707.186-.186.444-.293.707-.293z"
-                                                        fill="#FF6F61"
-                                                    ></path>
-                                                </g>
-                                            </svg>
-                                        </div>
-                                    </button>
+                            <div className="flex gap-2">
+                                <button
+                                    className="Modal__button"
+                                    onClick={() => setIsEditing(true)}
+                                    type="button"
+                                >
+                                    <div>
+                                        <svg
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="icons--xs path--fill-current text-gray-300"
+                                        >
+                                            <g fill="none" fill-rule="evenodd">
+                                                <path
+                                                    d="M16.824 3.197a2.91 2.91 0 01.877 3.895l-.092.144-5.642 8.365a1 1 0 01-1.718-1.018l.06-.1 5.642-8.365a.91.91 0 00-1.444-1.102l-.064.084L8.8 13.465a1 1 0 01-1.717-1.017l.06-.1 5.642-8.366a2.91 2.91 0 014.04-.785z"
+                                                    fill="#9656A1"
+                                                    fill-rule="nonzero"
+                                                ></path>
+                                                <path
+                                                    d="M6.52 14.474a1 1 0 01.382.155l2.56 1.722A1 1 0 019.473 18h6.33c.042 0 .085.003.126.008l.022.004c.036.005.07.012.104.02l.02.007c.034.008.066.02.098.032.008.005.017.008.025.012.034.013.066.03.098.047l.01.007a.845.845 0 01.093.06l.057.046-.04-.032c.066.05.125.11.176.176l.006.009.007.009a.977.977 0 01.116.2l.01.025a.789.789 0 01.034.097c0 .007.003.014.004.02a.969.969 0 01.001.506l-.006.02a.807.807 0 01-.033.098l-.011.025a.948.948 0 01-.115.2l-.046.058-.038.04-.012.013c-.029.03-.06.057-.093.083l-.018.013a.906.906 0 01-.092.061l-.01.006a.828.828 0 01-.097.049l-.026.01a.783.783 0 01-.098.034l-.02.004a.83.83 0 01-.104.022l-.042.004-.107.007h-10c-.06 0-.118-.005-.176-.015a1.001 1.001 0 01-.902-1.174l.634-3.53a1 1 0 011.161-.808zm12.283 3.527c.263 0 .521.107.707.293.186.186.293.444.293.707 0 .263-.107.521-.293.707a1.008 1.008 0 01-.707.293c-.263 0-.52-.107-.707-.293a1.007 1.007 0 01-.293-.707c0-.263.107-.52.293-.707.186-.186.444-.293.707-.293z"
+                                                    fill="#FF6F61"
+                                                ></path>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </button>
 
-                                    <button
-                                        onClick={handleLogout}
-                                        className="Modal__button"
-                                        type="button"
-                                    >
-                                        <div>
-                                            <img
-                                                src={Logout}
-                                                alt="Log out button"
-                                            />
-                                        </div>
-                                    </button>
-                                </div>
-                            )}
+                                <button
+                                    onClick={handleLogout}
+                                    className="Modal__button"
+                                    type="button"
+                                >
+                                    <div>
+                                        <img
+                                            src={Logout}
+                                            alt="Log out button"
+                                        />
+                                    </div>
+                                </button>
+                            </div>
                         </div>
                         <div className="grid grid-cols-2">
                             <div>
@@ -316,18 +306,16 @@ const UserProfile: React.FC = () => {
                         </div>
 
                         <div className="grid gap-6 rounded-xl bg-white p-6 sm:grid-cols-1 md:grid-cols-2">
-                                <div className="">
-                                    <p className="text-black font-bold text-xs">
-                                        Monthly Level
-                                    </p>
-                                </div>
-
-                                <div className="mt-2 flex rounded-lg bg-secondary-400 p-4">
-                                    <div className="flex w-full flex-wrap justify-center">
-                                        
-                                    </div>
-                                </div>
+                            <div className="">
+                                <p className="text-black font-bold text-xs">
+                                    Monthly Level
+                                </p>
                             </div>
+
+                            <div className="mt-2 flex rounded-lg bg-secondary-400 p-4">
+                                <div className="flex w-full flex-wrap justify-center"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
